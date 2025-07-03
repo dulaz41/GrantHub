@@ -244,3 +244,7 @@ access(all) contract GrantHub {
         to.deposit(from: <- payout)
         emit CommunityPoolWithdrawal(proposalId: proposalId, to: caller, amount: amount)
     }
+
+    access(all) fun getAllProposalMetas(): [ProposalMeta] {
+        return self.proposalMetas.values
+    }
