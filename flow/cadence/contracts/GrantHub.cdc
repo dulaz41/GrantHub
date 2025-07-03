@@ -7,3 +7,5 @@ access(all) contract GrantHub {
     access(all) let FgrantPublicPath: PublicPath
     access(all) let FgrantPrivatePath: PrivatePath
     access(all) let FgrantStoragePath: StoragePath
+
+    access(all) var proposalCounter: UInt64
