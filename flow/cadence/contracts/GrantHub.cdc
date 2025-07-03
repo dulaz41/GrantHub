@@ -388,5 +388,6 @@ access(all) contract GrantHub {
         self.proposalMetas = {}
 
         self.adminRole = AdminRole(admin: self.account.address)
+        self.communityPool <- FlowToken.createEmptyVault(vaultType: Type<@FlowToken.Vault>())
     }
 }
