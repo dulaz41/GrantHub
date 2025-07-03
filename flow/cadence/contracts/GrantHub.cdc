@@ -233,6 +233,7 @@ access(all) contract GrantHub {
         let proposalPath = self.proposalPaths[proposalId]!
         let proposalRef = self.account.storage.borrow<&Proposal>(from: proposalPath)
             ?? panic("Proposal not found")
+        let isAuthorized = (proposalRef.proposer == caller) || (self.adminRole?.isAdmin(addr: caller) == true)
         if !isAuthorized {
             panic("Not authorized to withdraw for this proposal")
         }
