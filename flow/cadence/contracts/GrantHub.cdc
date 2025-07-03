@@ -385,6 +385,7 @@ access(all) contract GrantHub {
         self.poolCounter = 0
         self.proposalPaths = {}
         self.poolPaths = {}
+        self.proposalMetas = {}
 
     }
 }
