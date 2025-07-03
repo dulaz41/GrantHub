@@ -62,3 +62,28 @@ access(all) contract GrantHub {
             return addr == self.adminAddress
         }
     }
+
+    access(all) struct Milestone {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let amount: UFix64
+        access(all) let deadline: UFix64
+        access(contract) var released: Bool
+
+        init(
+            _id: UInt64,
+            _name: String,
+            _description: String,
+            _amount: UFix64,
+            _deadline: UFix64
+        ) {
+            self.id = _id
+            self.name = _name
+            self.description = _description
+            self.amount = _amount
+            self.deadline = _deadline
+            self.released = false
+        }
+
+    }
