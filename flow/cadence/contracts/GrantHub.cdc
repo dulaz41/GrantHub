@@ -258,4 +258,7 @@ access(all) contract GrantHub {
             projectDescription: String,
             fundingGoal: UFix64
         ): UInt64
+
+        access(all) fun getProposalRef(id: UInt64, acct: &Account): &Proposal?
+
     }
