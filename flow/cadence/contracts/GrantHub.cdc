@@ -86,4 +86,7 @@ access(all) contract GrantHub {
             self.released = false
         }
 
+        access(all) fun markReleased() {
+            self.released = true
+        }
     }
