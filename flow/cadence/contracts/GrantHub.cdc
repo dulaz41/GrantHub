@@ -294,4 +294,9 @@ access(all) contract GrantHub {
             acct.storage.save(<-proposal, to: path)
             GrantHub.proposalPaths[id] = path
 
+            if !acct.capabilities.get<&Proposal>(publicPath).check() {
+                let cap = acct.capabilities.storage.issue<&Proposal>(path)
+                acct.capabilities.publish(cap, at: publicPath)
+            }
+
         }
