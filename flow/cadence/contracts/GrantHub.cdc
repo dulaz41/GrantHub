@@ -344,5 +344,7 @@ access(all) contract GrantHub {
 
             acct.storage.save(<-pool, to: path)
             GrantHub.poolPaths[id] = path
+
+            emit PoolCreated(poolID: id, proposalId: proposalId, from: acct.address, amount: amount)
             return id
         }
