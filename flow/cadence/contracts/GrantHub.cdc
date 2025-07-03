@@ -51,3 +51,5 @@ access(all) contract GrantHub {
     access(all) event ProposalFundsWithdrawn(id: UInt64, from: Address?, amount: UFix64)
     access(all) event MilestoneReleased(proposalId: UInt64, milestoneId: UInt64, amount: UFix64)
     access(all) event ContractInitialized()
+    access(all) event CommunityPoolWithdrawal(proposalId: UInt64, to: Address, amount: UFix64)
+
