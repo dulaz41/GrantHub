@@ -217,3 +217,8 @@ access(all) contract GrantHub {
             emit PoolCreated(poolID: self.id, proposalId: self.proposalId, from: self.poolCreator, amount: self.amount)
         }
     }
+
+    access(all) fun fundCommunityPool(from: @{FungibleToken.Vault}, fromAddress: Address?) {
+        let amount = from.balance
+        self.communityPool.deposit(from: <- from)
+    }
