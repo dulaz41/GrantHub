@@ -249,4 +249,13 @@ access(all) contract GrantHub {
         return self.proposalMetas.values
     }
 
-    access(all) resource interface ProposalManagerInterface { }
+    access(all) resource interface ProposalManagerInterface {
+        access(all) fun createProposal(
+            acct: auth(Storage, Capabilities) &Account,
+            name: String,
+            projectName: String,
+            coverDescription: String,
+            projectDescription: String,
+            fundingGoal: UFix64
+        ): UInt64
+    }
