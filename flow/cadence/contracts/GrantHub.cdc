@@ -382,5 +382,6 @@ access(all) contract GrantHub {
         self.FgrantStoragePath = /storage/FgrantStorage
 
         self.proposalCounter = 0
+        self.poolCounter = 0
     }
 }
