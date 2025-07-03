@@ -90,3 +90,39 @@ access(all) contract GrantHub {
             self.released = true
         }
     }
+
+    access(all) resource Proposal {
+        access(all) let id: UInt64
+        access(all) let proposer: Address?
+        access(all) var name: String
+        access(all) var projectName: String
+        access(all) var coverDescription: String
+        access(all) var projectDescription: String
+        access(all) var fundingGoal: UFix64
+        access(all) var fundingCompleted: Bool
+        access(all) var funders: {Address: Bool}
+        access(all) var milestones: {UInt64: Milestone}
+        access(all) var nextMilestoneId: UInt64
+        access(all) var vault: @{FungibleToken.Vault}
+
+        init(
+            _id: UInt64,
+            _proposer: Address?,
+            _name: String,
+            _projectName: String,
+            _coverDescription: String,
+            _projectDescription: String,
+            _fundingGoal: UFix64
+        ) {
+            self.id = _id
+            self.proposer = _proposer
+            self.name = _name
+            self.projectName = _projectName
+            self.coverDescription = _coverDescription
+            self.projectDescription = _projectDescription
+            self.fundingGoal = _fundingGoal
+            self.fundingCompleted = false
+            self.funders = {}
+            self.milestones = {}
+            self.nextMilestoneId = 1
+        }
