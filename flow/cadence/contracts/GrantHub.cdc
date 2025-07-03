@@ -188,5 +188,6 @@ access(all) contract GrantHub {
             }
             let payout <- self.vault.withdraw(amount: amount)
             receiver.deposit(from: <- payout)
+            emit ProposalFundsWithdrawn(id: self.id, from: caller, amount: amount)
         }
     }
