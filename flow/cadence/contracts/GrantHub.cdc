@@ -319,3 +319,9 @@ access(all) contract GrantHub {
             )
             return id
         }
+
+        access(all) fun getProposalRef(id: UInt64, acct: &Account): &Proposal? {
+            let publicPath = PublicPath(identifier: "GrantHubProposal_".concat(id.toString()))!
+            let cap = acct.capabilities.get<&Proposal>(publicPath)
+            return cap.borrow()
+        }
