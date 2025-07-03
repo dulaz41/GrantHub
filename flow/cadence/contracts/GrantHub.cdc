@@ -367,3 +367,11 @@ access(all) contract GrantHub {
             ?? panic("Proposal not found in storage")
         return proposalRef.vault.balance
     }
+
+    access(all) fun setAdmin(newAdmin: Address) {
+        if self.adminRole == nil || self.adminRole!.isAdmin(addr: self.account.address) {
+            self.adminRole = AdminRole(admin: newAdmin)
+        } else {
+            panic("Only current admin can change admin role")
+        }
+    }
