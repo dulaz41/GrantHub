@@ -263,4 +263,6 @@ access(all) contract GrantHub {
 
         access(all) fun createPool(acct: auth(Storage) &Account, proposalId: UInt64, amount: UFix64): UInt64
 
+        access(all) fun getPoolRef(id: UInt64,  acct: &Account): &Pool?
     }
+
