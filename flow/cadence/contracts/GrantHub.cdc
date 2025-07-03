@@ -191,3 +191,21 @@ access(all) contract GrantHub {
             emit ProposalFundsWithdrawn(id: self.id, from: caller, amount: amount)
         }
     }
+
+    access(all) resource Pool {
+        access(all) let id: UInt64
+        access(all) let proposalId: UInt64
+        access(all) let poolCreator: Address
+        access(all) var amount: UFix64
+
+        init(
+            _id: UInt64,
+            _proposalId: UInt64,
+            _poolCreator: Address,
+            _amount: UFix64
+        ) {
+            self.id = _id
+            self.proposalId = _proposalId
+            self.poolCreator = _poolCreator
+            self.amount = _amount
+        }
