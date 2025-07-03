@@ -9,3 +9,4 @@ access(all) contract GrantHub {
     access(all) let FgrantStoragePath: StoragePath
 
     access(all) var proposalCounter: UInt64
+    access(all) var poolCounter: UInt64 
