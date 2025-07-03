@@ -16,3 +16,28 @@ access(all) contract GrantHub {
     access(all) var poolPaths: {UInt64: StoragePath}
 
     access(all) var communityPool: @{FungibleToken.Vault}
+
+    access(all) struct ProposalMeta {
+        access(all) let id: UInt64
+        access(all) let proposer: Address?
+        access(all) let name: String
+        access(all) let projectName: String
+        access(all) let coverDescription: String
+        access(all) let fundingGoal: UFix64
+
+        init(
+            id: UInt64,
+            proposer: Address?,
+            name: String,
+            projectName: String,
+            coverDescription: String,
+            fundingGoal: UFix64
+        ) {
+            self.id = id
+            self.proposer = proposer
+            self.name = name
+            self.projectName = projectName
+            self.coverDescription = coverDescription
+            self.fundingGoal = fundingGoal
+        }
+    }
