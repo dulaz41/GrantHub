@@ -209,3 +209,10 @@ access(all) contract GrantHub {
             self.poolCreator = _poolCreator
             self.amount = _amount
         }
+
+        access(all) fun fund(from: @{FungibleToken.Vault}) {
+            let depositAmount = from.balance
+            destroy from
+            self.amount = self.amount + depositAmount
+        }
+    }
