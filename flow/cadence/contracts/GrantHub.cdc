@@ -348,3 +348,10 @@ access(all) contract GrantHub {
             emit PoolCreated(poolID: id, proposalId: proposalId, from: acct.address, amount: amount)
             return id
         }
+
+        access(all) fun getPoolRef(id: UInt64,  acct: &Account): &Pool? {
+            let publicPath = PublicPath(identifier: "GrantHubPool_".concat(id.toString()))!
+            let cap = acct.capabilities.get<&Pool>(publicPath)
+            return cap.borrow()
+        }
+    }
