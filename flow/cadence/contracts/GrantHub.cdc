@@ -288,4 +288,10 @@ access(all) contract GrantHub {
                 _fundingGoal: fundingGoal
             )
 
+            let path = StoragePath(identifier: "GrantHubProposal_".concat(id.toString()))!
+            let publicPath = PublicPath(identifier: "GrantHubProposal_".concat(id.toString()))!
+
+            acct.storage.save(<-proposal, to: path)
+            GrantHub.proposalPaths[id] = path
+
         }
