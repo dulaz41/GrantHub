@@ -359,3 +359,11 @@ access(all) contract GrantHub {
     access(all) fun createProposalManager(): @ProposalManager {
         return <-create ProposalManager()
     }
+
+    access(all) fun getProposalBalance(proposalId: UInt64): UFix64 {
+        let proposalPath = self.proposalPaths[proposalId] 
+            ?? panic("Proposal not found")
+        let proposalRef = self.account.storage.borrow<&Proposal>(from: proposalPath)
+            ?? panic("Proposal not found in storage")
+        return proposalRef.vault.balance
+    }
