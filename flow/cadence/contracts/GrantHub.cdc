@@ -266,3 +266,4 @@ access(all) contract GrantHub {
         access(all) fun getPoolRef(id: UInt64,  acct: &Account): &Pool?
     }
 
+    access(all) resource ProposalManager: ProposalManagerInterface { }
