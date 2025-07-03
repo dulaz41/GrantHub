@@ -10,3 +10,4 @@ access(all) contract GrantHub {
 
     access(all) var proposalCounter: UInt64
     access(all) var poolCounter: UInt64 
+    access(all) var adminRole: AdminRole?
