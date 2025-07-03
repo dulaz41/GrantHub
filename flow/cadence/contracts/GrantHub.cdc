@@ -175,4 +175,5 @@ access(all) contract GrantHub {
             self.milestones[milestoneId] = milestone
             let payout <- self.vault.withdraw(amount: milestone.amount)
             recipient.deposit(from: <- payout)
+            emit MilestoneReleased(proposalId: self.id, milestoneId: milestoneId, amount: milestone.amount)
         }
