@@ -340,5 +340,9 @@ access(all) contract GrantHub {
                 _amount: amount
             )
 
+            let path = StoragePath(identifier: "GrantHubPool_".concat(id.toString()))!
+
+            acct.storage.save(<-pool, to: path)
+            GrantHub.poolPaths[id] = path
             return id
         }
