@@ -387,5 +387,6 @@ access(all) contract GrantHub {
         self.poolPaths = {}
         self.proposalMetas = {}
 
+        self.adminRole = AdminRole(admin: self.account.address)
     }
 }
