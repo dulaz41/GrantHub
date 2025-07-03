@@ -266,4 +266,26 @@ access(all) contract GrantHub {
         access(all) fun getPoolRef(id: UInt64,  acct: &Account): &Pool?
     }
 
-    access(all) resource ProposalManager: ProposalManagerInterface { }
+    access(all) resource ProposalManager: ProposalManagerInterface {
+        access(all) fun createProposal(
+            acct: auth(Storage, Capabilities) &Account,
+            name: String,
+            projectName: String,
+            coverDescription: String,
+            projectDescription: String,
+            fundingGoal: UFix64
+        ): UInt64 {
+            GrantHub.proposalCounter = GrantHub.proposalCounter + 1
+            let id = GrantHub.proposalCounter
+            let proposer = acct.address
+            let proposal <- create Proposal(
+                _id: id,
+                _proposer: proposer,
+                _name: name,
+                _projectName: projectName,
+                _coverDescription: coverDescription,
+                _projectDescription: projectDescription,
+                _fundingGoal: fundingGoal
+            )
+
+        }
