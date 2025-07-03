@@ -214,5 +214,6 @@ access(all) contract GrantHub {
             let depositAmount = from.balance
             destroy from
             self.amount = self.amount + depositAmount
+            emit PoolCreated(poolID: self.id, proposalId: self.proposalId, from: self.poolCreator, amount: self.amount)
         }
     }
