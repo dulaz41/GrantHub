@@ -78,9 +78,9 @@ GrantHub is implemented in Cadence and includes:
 
 Make sure to:
 
-✅ Deploy `FungibleToken` and `FlowToken` contracts on your Flow emulator/testnet
-✅ Import their correct addresses into this contract
-✅ Deploy GrantHub with an admin account
+✅ Deploy `FungibleToken` and `FlowToken` contracts on your Flow emulator/testnet<br>
+✅ Import their correct addresses into this contract<br>
+✅ Deploy GrantHub with an admin account<br>
 
 ## 📚 Example Usage
 
@@ -126,10 +126,10 @@ These help off-chain indexers or UIs track the contract’s lifecycle.
 
 ## 🔒 Security
 
-✅ All critical withdraws are gated by `isAdmin` or proposer checks
-✅ Proposals and Pools are resource-based to enforce ownership
-✅ Capabilities are published in a secure way to allow read access
-✅ Community pool is permission-gated
+✅ All critical withdraws are gated by `isAdmin` or proposer checks<br>
+✅ Proposals and Pools are resource-based to enforce ownership<br>
+✅ Capabilities are published in a secure way to allow read access<br>
+✅ Community pool is permission-gated<br>
 
 ---
 
