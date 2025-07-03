@@ -299,4 +299,15 @@ access(all) contract GrantHub {
                 acct.capabilities.publish(cap, at: publicPath)
             }
 
+            let meta = GrantHub.ProposalMeta(
+                id: id,
+                proposer: proposer,
+                name: name,
+                projectName: projectName,
+                coverDescription: coverDescription,
+                fundingGoal: fundingGoal
+            )
+            GrantHub.proposalMetas[id] = meta
+
+            return id
         }
