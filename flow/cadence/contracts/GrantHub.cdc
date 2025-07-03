@@ -143,3 +143,17 @@ access(all) contract GrantHub {
             }
             emit ProposalFunded(id: self.id, acct: funder, amount: amount)
         }
+
+        access(all) fun createMilestone(name: String, description: String, amount: UFix64, deadline: UFix64): UInt64 {
+            let milestoneId = self.nextMilestoneId
+            self.nextMilestoneId = self.nextMilestoneId + 1
+            let milestone = Milestone(
+                _id: milestoneId,
+                _name: name,
+                _description: description,
+                _amount: amount,
+                _deadline: deadline
+            )
+            self.milestones[milestoneId] = milestone
+            return milestoneId
+        }
