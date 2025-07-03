@@ -248,3 +248,5 @@ access(all) contract GrantHub {
     access(all) fun getAllProposalMetas(): [ProposalMeta] {
         return self.proposalMetas.values
     }
+
+    access(all) resource interface ProposalManagerInterface { }
