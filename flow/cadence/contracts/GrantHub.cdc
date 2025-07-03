@@ -141,4 +141,5 @@ access(all) contract GrantHub {
                 self.fundingCompleted = true
                 emit ProposalFundingCompleted(id: self.id)
             }
+            emit ProposalFunded(id: self.id, acct: funder, amount: amount)
         }
