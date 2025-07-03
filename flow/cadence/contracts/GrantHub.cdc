@@ -47,3 +47,4 @@ access(all) contract GrantHub {
     access(all) event ProposalFunded(id: UInt64, acct: Address?, amount: UFix64)
     access(all) event ProposalFundingCompleted(id: UInt64)
     access(all) event PoolCreated(poolID: UInt64, proposalId: UInt64, from: Address?, amount: UFix64)
+    access(all) event PoolFundingCompleted(amount: UFix64, from: Address?)
