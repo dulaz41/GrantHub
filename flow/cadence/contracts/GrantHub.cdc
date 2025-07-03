@@ -125,4 +125,5 @@ access(all) contract GrantHub {
             self.funders = {}
             self.milestones = {}
             self.nextMilestoneId = 1
+            self.vault <- FlowToken.createEmptyVault(vaultType: Type<@FlowToken.Vault>())
         }
