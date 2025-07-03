@@ -1,0 +1,1 @@
+import FungibleToken from 0x9a0766d93b6608b7
