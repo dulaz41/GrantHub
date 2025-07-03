@@ -42,3 +42,5 @@ access(all) contract GrantHub {
         }
     }
     access(all) var proposalMetas: {UInt64: ProposalMeta}
+
+    access(all) event ProposalCreated(id: UInt64, from: Address?, name: String, projectName: String, description: String, amount: UFix64)
