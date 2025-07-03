@@ -177,3 +177,16 @@ access(all) contract GrantHub {
             recipient.deposit(from: <- payout)
             emit MilestoneReleased(proposalId: self.id, milestoneId: milestoneId, amount: milestone.amount)
         }
+
+        access(all) fun withdraw(receiver: &{FungibleToken.Receiver}, amount: UFix64, caller: Address) {
+            if caller != self.proposer && !(GrantHub.adminRole?.isAdmin(addr: caller) == true) {
+                panic("Only proposer or admin can withdraw")
+            }
+
+            if amount > self.vault.balance {
+                panic("Amount exceeds available balance")
+            }
+            let payout <- self.vault.withdraw(amount: amount)
+            receiver.deposit(from: <- payout)
+        }
+    }
