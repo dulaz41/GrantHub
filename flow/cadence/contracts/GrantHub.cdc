@@ -157,3 +157,22 @@ access(all) contract GrantHub {
             self.milestones[milestoneId] = milestone
             return milestoneId
         }
+
+        access(all) fun releaseMilestone(milestoneId: UInt64, recipient: &{FungibleToken.Receiver}) {
+            let milestone = self.milestones[milestoneId] ?? panic("Milestone not found")
+            if milestone.released {
+                panic("Milestone already released")
+            }
+            if self.vault.balance < milestone.amount {
+                panic("Not enough funds to release milestone")
+            }
+            let now = getCurrentBlock().timestamp / 1_000_000_000.0
+            if now < milestone.deadline {
+                panic("Milestone deadline has not passed yet")
+            }
+
+            milestone.markReleased()
+            self.milestones[milestoneId] = milestone
+            let payout <- self.vault.withdraw(amount: milestone.amount)
+            recipient.deposit(from: <- payout)
+        }
