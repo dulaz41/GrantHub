@@ -53,3 +53,12 @@ access(all) contract GrantHub {
     access(all) event ContractInitialized()
     access(all) event CommunityPoolWithdrawal(proposalId: UInt64, to: Address, amount: UFix64)
 
+    access(all) struct AdminRole {
+        access(all) var adminAddress: Address
+        init(admin: Address) {
+            self.adminAddress = admin
+        }
+        access(all) fun isAdmin(addr: Address): Bool {
+            return addr == self.adminAddress
+        }
+    }
