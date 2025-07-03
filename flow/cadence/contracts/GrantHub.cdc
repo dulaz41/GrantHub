@@ -325,3 +325,20 @@ access(all) contract GrantHub {
             let cap = acct.capabilities.get<&Proposal>(publicPath)
             return cap.borrow()
         }
+
+        access(all) fun createPool(
+            acct: auth(Storage) &Account,
+            proposalId: UInt64,
+            amount: UFix64
+        ): UInt64 {
+            GrantHub.poolCounter = GrantHub.poolCounter + 1
+            let id = GrantHub.poolCounter
+            let pool <- create Pool(
+                _id: id,
+                _proposalId: proposalId,
+                _poolCreator: acct.address,
+                _amount: amount
+            )
+
+            return id
+        }
