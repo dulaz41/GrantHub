@@ -378,5 +378,7 @@ access(all) contract GrantHub {
 
     init() {
         self.FgrantPublicPath = /public/FgrantPublic
+        self.FgrantPrivatePath = /private/FgrantPrivate
+
     }
 }
