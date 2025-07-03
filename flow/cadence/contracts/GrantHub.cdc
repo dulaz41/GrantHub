@@ -224,3 +224,22 @@ access(all) contract GrantHub {
         emit PoolFundingCompleted(amount: amount, from: fromAddress)
     }
 
+    access(all) fun withdrawFromCommunityPool(
+        proposalId: UInt64,
+        to: &{FungibleToken.Receiver},
+        amount: UFix64,
+        caller: Address
+    ) {
+        let proposalPath = self.proposalPaths[proposalId]!
+        let proposalRef = self.account.storage.borrow<&Proposal>(from: proposalPath)
+            ?? panic("Proposal not found")
+        if !isAuthorized {
+            panic("Not authorized to withdraw for this proposal")
+        }
+        if amount > self.communityPool.balance {
+            panic("Not enough funds in community pool")
+        }
+        let payout <- self.communityPool.withdraw(amount: amount)
+        to.deposit(from: <- payout)
+        emit CommunityPoolWithdrawal(proposalId: proposalId, to: caller, amount: amount)
+    }
