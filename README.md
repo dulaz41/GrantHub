@@ -82,27 +82,110 @@ Make sure to:
 ✅ Import their correct addresses into this contract<br>
 ✅ Deploy GrantHub with an admin account<br>
 
-## 📚 Example Usage
+---
 
-### Create a proposal
+## 🚀 Usage & Commands
 
-* Call `createProposal` on a `ProposalManager` resource
-* Provide name, project description, funding goal, etc.
+Below are **Flow CLI** commands to interact with the GrantHub contract after deployment:
 
-### Fund a proposal
+### 📌 Checking user vault
 
-* Call `fund` on the `Proposal` resource with a FlowToken vault
-* The vault is safely deposited into the proposal's internal vault
+```bash
+flow scripts execute cadence/scripts/check_vault_exists.cdc \
+  --network testnet \
+  --args-json '[{"type":"Address","value":"0x4bccd1931d30027a"}]'
+```
 
-### Create a pool
+### 📌 Get all proposals metadata
 
-* Call `createPool` on `ProposalManager`
-* Provide the amount, which will be recorded in the Pool resource
+```bash
+flow scripts execute cadence/scripts/getAllProposals.cdc --network testnet
+```
 
-### Use community pool
+### 📌 Get a single proposal
 
-* Fund with `fundCommunityPool`
-* Withdraw with `withdrawFromCommunityPool` (requires admin or proposer rights)
+```bash
+flow scripts execute cadence/scripts/getProposals.cdc \
+  --network testnet \
+  --args-json '[{"type":"UInt64","value":"1"}, {"type":"Address","value":"0x4bccd1931d30027a"}]' \
+  --signer grant
+```
+
+### 📌 Fund a proposal
+
+```bash
+flow transactions send cadence/transactions/fundProposal.cdc \
+  --network testnet \
+  --args-json '[{"type":"Address","value":"0x4bccd1931d30027a"}, {"type":"UInt64","value":"3"}, {"type":"UFix64","value":"10.0"}]' \
+  --signer grant
+```
+
+### 📌 Create a milestone for a proposal
+
+```bash
+flow transactions send cadence/transactions/create_milestone.cdc \
+  --signer grant \
+  --args-json '[{"type":"UInt64","value":"1"}, {"type":"String","value":"Milestone 1"}, {"type":"String","value":"Description"}, {"type":"UFix64","value":"10.0"}, {"type":"UFix64","value":"1234567890.0"}]' \
+  --network testnet
+```
+
+### 📌 Fund the community pool
+
+```bash
+flow transactions send cadence/transactions/fundCommunityPool.cdc \
+  --signer grant \
+  --args-json '[{"type":"UFix64","value":"10.0"}]' \
+  --network testnet
+```
+
+### 📌 Release a milestone payment
+
+```bash
+flow transactions send cadence/transactions/release_milestone.cdc \
+  --signer grant \
+  --args-json '[{"type":"UInt64","value":"1"}, {"type":"UInt64","value":"1"}, {"type":"Address","value":"0x..."}]' \
+  --network testnet
+```
+
+### 📌 Withdraw from the community pool
+
+```bash
+flow transactions send cadence/transactions/withdrawCommunityFunds.cdc \
+  --signer grant \
+  --args-json '[{"type":"UInt64","value":"1"}, {"type":"UFix64","value":"5.0"}]' \
+  --network testnet
+```
+
+### 📌 Withdraw proposal funds
+
+```bash
+flow transactions send cadence/transactions/withdrawFunds.cdc \
+  --signer grant \
+  --args-json '[{"type":"UInt64","value":"1"}, {"type":"UFix64","value":"5.0"}]' \
+  --network testnet
+```
+
+### 📌 Get milestone data
+
+```bash
+flow scripts execute cadence/scripts/getMilestone.cdc \
+  --args-json '[{"type":"UInt64","value":"1"}, {"type":"UInt64","value":"1"}, {"type":"Address","value":"0x..."}]' \
+  --network testnet
+```
+
+### 📌 Get community pool balance
+
+```bash
+flow scripts execute cadence/scripts/getCommunityPoolBalance.cdc --network testnet
+```
+
+### 📌 Get proposal balance
+
+```bash
+flow scripts execute cadence/scripts/getProposalBalance.cdc \
+  --args-json '[{"type":"UInt64","value":"1"}]' \
+  --network testnet
+```
 
 ---
 
