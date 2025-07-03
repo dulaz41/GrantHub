@@ -375,3 +375,8 @@ access(all) contract GrantHub {
             panic("Only current admin can change admin role")
         }
     }
+
+    init() {
+        self.FgrantPublicPath = /public/FgrantPublic
+    }
+}
