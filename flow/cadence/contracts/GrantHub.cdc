@@ -355,3 +355,7 @@ access(all) contract GrantHub {
             return cap.borrow()
         }
     }
+
+    access(all) fun createProposalManager(): @ProposalManager {
+        return <-create ProposalManager()
+    }
