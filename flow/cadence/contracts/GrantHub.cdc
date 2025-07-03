@@ -127,3 +127,18 @@ access(all) contract GrantHub {
             self.nextMilestoneId = 1
             self.vault <- FlowToken.createEmptyVault(vaultType: Type<@FlowToken.Vault>())
         }
+
+        access(all) fun fund(from: @{FungibleToken.Vault}, funder: Address) {
+            if self.fundingCompleted {
+                destroy from
+                panic("Funding goal already reached. No more funds accepted.")
+            }
+            let amount = from.balance
+            self.vault.deposit(from: <- from)
+            self.funders[funder] = true
+
+            if self.vault.balance >= self.fundingGoal {
+                self.fundingCompleted = true
+                emit ProposalFundingCompleted(id: self.id)
+            }
+        }
