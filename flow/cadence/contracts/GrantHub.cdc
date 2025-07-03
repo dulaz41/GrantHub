@@ -221,4 +221,6 @@ access(all) contract GrantHub {
     access(all) fun fundCommunityPool(from: @{FungibleToken.Vault}, fromAddress: Address?) {
         let amount = from.balance
         self.communityPool.deposit(from: <- from)
+        emit PoolFundingCompleted(amount: amount, from: fromAddress)
     }
+
