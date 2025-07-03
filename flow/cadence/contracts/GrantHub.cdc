@@ -41,3 +41,4 @@ access(all) contract GrantHub {
             self.fundingGoal = fundingGoal
         }
     }
+    access(all) var proposalMetas: {UInt64: ProposalMeta}
