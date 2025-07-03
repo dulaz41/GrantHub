@@ -309,5 +309,13 @@ access(all) contract GrantHub {
             )
             GrantHub.proposalMetas[id] = meta
 
+            emit ProposalCreated(
+                id: id,
+                from: proposer,
+                name: name,
+                projectName: projectName,
+                description: coverDescription,
+                amount: fundingGoal
+            )
             return id
         }
