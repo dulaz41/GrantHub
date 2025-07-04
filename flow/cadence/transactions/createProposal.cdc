@@ -1,4 +1,4 @@
-import GrantHub from 0x4bccd1931d30027a
+import GrantHub from 0xb9b9e5ad5de42ef6
 
 transaction(
     name: String,
@@ -8,17 +8,15 @@ transaction(
     fundingGoal: UFix64
 ) {
     prepare(acct: auth(Storage, Capabilities) &Account) {
-        let manager <- GrantHub.createProposalManager()
-        let proposalId = manager.createProposal(
-            acct: acct,
+        let proposer = acct.address
+        let proposalId = GrantHub.createProposal(
+            proposer: proposer,
             name: name,
             projectName: projectName,
             coverDescription: coverDescription,
             projectDescription: projectDescription,
             fundingGoal: fundingGoal
         )
-
-        destroy manager
-        log("Created proposal with ID ".concat(proposalId.toString()))
+        log("Created proposal with ID: ".concat(proposalId.toString()))
     }
 }
