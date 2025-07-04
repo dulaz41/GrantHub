@@ -31,12 +31,12 @@ const Project: React.FC = () => {
 
     async function getProposal() {
       const GET_ALL_PROPS = `
-            import Fgrant from 0x6d9cda4dce6218f2
+            import GrantHub from 0xb9b9e5ad5de42ef6
 
-            pub fun main(): [Fgrant.ProposalDetails] {
-                let propose = getAccount(0x6d9cda4dce6218f2).getCapability(/public/FgrantPublicP).borrow<&Fgrant.ProposalRes{Fgrant.ProposalPublic}>()!
-                return [propose.getProposals()]
-            }`;
+            access(all) fun main(): [GrantHub.ProposalMeta] {
+                return GrantHub.getAllProposalMetas()
+            }
+            `;
       const response = await fcl.query({
         cadence: GET_ALL_PROPS,
       });
