@@ -1,4 +1,4 @@
-import GrantHub from 0x4bccd1931d30027a
+import GrantHub from 0xb9b9e5ad5de42ef6
 
 access(all) fun main(proposalId: UInt64, milestoneId: UInt64, acct: Address): {String: AnyStruct} {
     let account = getAuthAccount<auth(BorrowValue) &Account>(acct)
