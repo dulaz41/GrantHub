@@ -19,58 +19,59 @@
 
 GrantHub is implemented in Cadence and includes:
 
-* **Proposals**:
+- **Proposals**:
 
-  * Resource-based with an internal vault for collected funds
-  * Support for milestones with deadlines and amounts
-  * Proposer or admin can withdraw
-  * Public capabilities for safe read access
+  - Resource-based with an internal vault for collected funds
+  - Support for milestones with deadlines and amounts
+  - Proposer or admin can withdraw
+  - Public capabilities for safe read access
 
-* **Pools**:
+- **Pools**:
 
-  * Resource-based
-  * Allow collective funding for proposals
-  * Funds tracked with FlowToken
+  - Resource-based
+  - Allow collective funding for proposals
+  - Funds tracked with FlowToken
 
-* **Community Pool**:
+- **Community Pool**:
 
-  * Shared funding vault for future allocation
-  * Admin- or proposer-authorized withdrawals
+  - Shared funding vault for future allocation
+  - Admin- or proposer-authorized withdrawals
 
-* **ProposalManager Resource**:
+- **ProposalManager Resource**:
 
-  * Factory to create proposals and pools
-  * Publishes capabilities to proposals and pools
-  * Keeps proposal and pool metadata up to date
+  - Factory to create proposals and pools
+  - Publishes capabilities to proposals and pools
+  - Keeps proposal and pool metadata up to date
 
-* **Admin Role**:
+- **Admin Role**:
 
-  * Controls key operations
-  * Configurable on deployment or via `setAdmin`
+  - Controls key operations
+  - Configurable on deployment or via `setAdmin`
 
-* **ProposalMeta**:
+- **ProposalMeta**:
 
-  * Lightweight metadata struct for easy indexing and scripts
+  - Lightweight metadata struct for easy indexing and scripts
 
 ---
 
 ## ⚙️ Contract Details
 
-* **Contract name**: `GrantHub`
-* **Proposals**:
+- **Contract name**: `GrantHub`
+- **Proposals**:
 
-  * Stored under dynamic paths: `/storage/GrantHubProposal_<id>`
-  * Public capability published under `/public/GrantHubProposal_<id>`
-* **Pools**:
+  - Stored under dynamic paths: `/storage/GrantHubProposal_<id>`
+  - Public capability published under `/public/GrantHubProposal_<id>`
 
-  * Stored under `/storage/GrantHubPool_<id>`
+- **Pools**:
+
+  - Stored under `/storage/GrantHubPool_<id>`
 
 ---
 
 ## 🪙 Token Support
 
-* Uses Flow Token (`FlowToken`) for vaults
-* Compliant with FungibleToken interface
+- Uses Flow Token (`FlowToken`) for vaults
+- Compliant with FungibleToken interface
 
 ---
 
@@ -93,7 +94,7 @@ Below are **Flow CLI** commands to interact with the GrantHub contract after dep
 ```bash
 flow scripts execute cadence/scripts/check_vault_exists.cdc \
   --network testnet \
-  --args-json '[{"type":"Address","value":"0x4bccd1931d30027a"}]'
+  --args-json '[{"type":"Address","value":"0xb9b9e5ad5de42ef6"}]'
 ```
 
 ### 📌 Get all proposals metadata
@@ -107,8 +108,7 @@ flow scripts execute cadence/scripts/getAllProposals.cdc --network testnet
 ```bash
 flow scripts execute cadence/scripts/getProposals.cdc \
   --network testnet \
-  --args-json '[{"type":"UInt64","value":"1"}, {"type":"Address","value":"0x4bccd1931d30027a"}]' \
-  --signer grant
+  --args-json '[{"type":"UInt64","value":"1"}, {"type":"Address","value":"0xb9b9e5ad5de42ef6"}]' \
 ```
 
 ### 📌 Fund a proposal
@@ -116,7 +116,7 @@ flow scripts execute cadence/scripts/getProposals.cdc \
 ```bash
 flow transactions send cadence/transactions/fundProposal.cdc \
   --network testnet \
-  --args-json '[{"type":"Address","value":"0x4bccd1931d30027a"}, {"type":"UInt64","value":"3"}, {"type":"UFix64","value":"10.0"}]' \
+  --args-json '[{"type":"Address","value":"0xb9b9e5ad5de42ef6"}, {"type":"UInt64","value":"3"}, {"type":"UFix64","value":"10.0"}]' \
   --signer grant
 ```
 
@@ -193,15 +193,15 @@ flow scripts execute cadence/scripts/getProposalBalance.cdc \
 
 GrantHub emits the following events for tracking:
 
-* `ProposalCreated`
-* `ProposalFunded`
-* `ProposalFundingCompleted`
-* `MilestoneReleased`
-* `PoolCreated`
-* `PoolFundingCompleted`
-* `CommunityPoolWithdrawal`
-* `ProposalFundsWithdrawn`
-* `ContractInitialized`
+- `ProposalCreated`
+- `ProposalFunded`
+- `ProposalFundingCompleted`
+- `MilestoneReleased`
+- `PoolCreated`
+- `PoolFundingCompleted`
+- `CommunityPoolWithdrawal`
+- `ProposalFundsWithdrawn`
+- `ContractInitialized`
 
 These help off-chain indexers or UIs track the contract’s lifecycle.
 
