@@ -108,23 +108,20 @@ flow scripts execute cadence/scripts/getAllProposals.cdc --network testnet
 ```bash
 flow scripts execute cadence/scripts/getProposals.cdc \
   --network testnet \
-  --args-json '[{"type":"UInt64","value":"1"}, {"type":"Address","value":"0xb9b9e5ad5de42ef6"}]' \
+  --args-json '[{"type":"UInt64","value":"3"}]'
 ```
 
-### 📌 Fund a proposal
+### 📌 Fund a proposal (By random user)
 
 ```bash
-flow transactions send cadence/transactions/fundProposal.cdc \
-  --network testnet \
-  --args-json '[{"type":"Address","value":"0xb9b9e5ad5de42ef6"}, {"type":"UInt64","value":"3"}, {"type":"UFix64","value":"10.0"}]' \
-  --signer grant
+flow transactions send cadence/transactions/fundProposal.cdc   --network testnet   --args-json '[{"type":"UInt64","value":"1"}, {"type":"UFix64","value":"1.0"}]'   --signer ai3
 ```
 
 ### 📌 Create a milestone for a proposal
 
 ```bash
 flow transactions send cadence/transactions/create_milestone.cdc \
-  --signer grant \
+  --signer flow \
   --args-json '[{"type":"UInt64","value":"1"}, {"type":"String","value":"Milestone 1"}, {"type":"String","value":"Description"}, {"type":"UFix64","value":"10.0"}, {"type":"UFix64","value":"1234567890.0"}]' \
   --network testnet
 ```
@@ -133,7 +130,7 @@ flow transactions send cadence/transactions/create_milestone.cdc \
 
 ```bash
 flow transactions send cadence/transactions/fundCommunityPool.cdc \
-  --signer grant \
+  --signer flow \
   --args-json '[{"type":"UFix64","value":"10.0"}]' \
   --network testnet
 ```
@@ -142,7 +139,7 @@ flow transactions send cadence/transactions/fundCommunityPool.cdc \
 
 ```bash
 flow transactions send cadence/transactions/release_milestone.cdc \
-  --signer grant \
+  --signer flow \
   --args-json '[{"type":"UInt64","value":"1"}, {"type":"UInt64","value":"1"}, {"type":"Address","value":"0x..."}]' \
   --network testnet
 ```
@@ -151,7 +148,7 @@ flow transactions send cadence/transactions/release_milestone.cdc \
 
 ```bash
 flow transactions send cadence/transactions/withdrawCommunityFunds.cdc \
-  --signer grant \
+  --signer flow \
   --args-json '[{"type":"UInt64","value":"1"}, {"type":"UFix64","value":"5.0"}]' \
   --network testnet
 ```
@@ -160,7 +157,7 @@ flow transactions send cadence/transactions/withdrawCommunityFunds.cdc \
 
 ```bash
 flow transactions send cadence/transactions/withdrawFunds.cdc \
-  --signer grant \
+  --signer flow \
   --args-json '[{"type":"UInt64","value":"1"}, {"type":"UFix64","value":"5.0"}]' \
   --network testnet
 ```
