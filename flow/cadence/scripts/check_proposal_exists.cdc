@@ -1,8 +1,5 @@
-import GrantHub from 0x4bccd1931d30027a
+import GrantHub from 0xb9b9e5ad5de42ef6
 
-access(all) fun main(account: Address, proposalId: UInt64): Bool {
-    let publicPath = PublicPath(identifier: "GrantHubProposal_".concat(proposalId.toString()))!
-    let cap = getAccount(account).capabilities.get<&GrantHub.Proposal>(publicPath)
-    let proposalRef = cap.borrow()
-    return proposalRef != nil
+access(all) fun main(id: UInt64): Bool {
+    return GrantHub.proposalExists(id: id)
 }
