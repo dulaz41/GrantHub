@@ -1,4 +1,4 @@
-import GrantHub from 0x4bccd1931d30027a
+import GrantHub from 0xb9b9e5ad5de42ef6
 
 transaction(
     proposalId: UInt64,
