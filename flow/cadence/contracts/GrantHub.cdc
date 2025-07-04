@@ -1,25 +1,30 @@
 import FungibleToken from 0x9a0766d93b6608b7
 import FlowToken from 0x7e60df042a9c0868
-import NonFungibleToken from 0x631e88ae7f1d7c20
 
 access(all) contract GrantHub {
-
-    access(all) let FgrantPublicPath: PublicPath
-    access(all) let FgrantPrivatePath: PrivatePath
-    access(all) let FgrantStoragePath: StoragePath
 
     access(all) var proposalCounter: UInt64
     access(all) var poolCounter: UInt64 
     access(all) var adminRole: AdminRole?
-
-    access(all) var proposalPaths: {UInt64: StoragePath}
-    access(all) var poolPaths: {UInt64: StoragePath}
-
+    access(all) var proposals: @{UInt64: Proposal}
+    access(all) var pools: @{UInt64: Pool}
+    access(all) var proposalMetas: {UInt64: ProposalMeta}
+    access(all) var poolMetas: {UInt64: PoolMeta}
     access(all) var communityPool: @{FungibleToken.Vault}
+
+    access(all) event ProposalCreated(id: UInt64, from: Address, name: String, projectName: String, description: String, amount: UFix64)
+    access(all) event ProposalFunded(id: UInt64, acct: Address, amount: UFix64)
+    access(all) event ProposalFundingCompleted(id: UInt64)
+    access(all) event PoolCreated(poolID: UInt64, proposalId: UInt64, from: Address, amount: UFix64)
+    access(all) event PoolFundingCompleted(amount: UFix64, from: Address)
+    access(all) event ProposalFundsWithdrawn(id: UInt64, from: Address, amount: UFix64)
+    access(all) event MilestoneReleased(proposalId: UInt64, milestoneId: UInt64, amount: UFix64)
+    access(all) event ContractInitialized()
+    access(all) event CommunityPoolWithdrawal(proposalId: UInt64, to: Address, amount: UFix64)
 
     access(all) struct ProposalMeta {
         access(all) let id: UInt64
-        access(all) let proposer: Address?
+        access(all) let proposer: Address
         access(all) let name: String
         access(all) let projectName: String
         access(all) let coverDescription: String
@@ -27,7 +32,7 @@ access(all) contract GrantHub {
 
         init(
             id: UInt64,
-            proposer: Address?,
+            proposer: Address,
             name: String,
             projectName: String,
             coverDescription: String,
@@ -41,17 +46,25 @@ access(all) contract GrantHub {
             self.fundingGoal = fundingGoal
         }
     }
-    access(all) var proposalMetas: {UInt64: ProposalMeta}
 
-    access(all) event ProposalCreated(id: UInt64, from: Address?, name: String, projectName: String, description: String, amount: UFix64)
-    access(all) event ProposalFunded(id: UInt64, acct: Address?, amount: UFix64)
-    access(all) event ProposalFundingCompleted(id: UInt64)
-    access(all) event PoolCreated(poolID: UInt64, proposalId: UInt64, from: Address?, amount: UFix64)
-    access(all) event PoolFundingCompleted(amount: UFix64, from: Address?)
-    access(all) event ProposalFundsWithdrawn(id: UInt64, from: Address?, amount: UFix64)
-    access(all) event MilestoneReleased(proposalId: UInt64, milestoneId: UInt64, amount: UFix64)
-    access(all) event ContractInitialized()
-    access(all) event CommunityPoolWithdrawal(proposalId: UInt64, to: Address, amount: UFix64)
+    access(all) struct PoolMeta {
+        access(all) let id: UInt64
+        access(all) let proposalId: UInt64
+        access(all) let poolCreator: Address
+        access(all) let amount: UFix64
+
+        init(
+            id: UInt64,
+            proposalId: UInt64,
+            poolCreator: Address,
+            amount: UFix64
+        ) {
+            self.id = id
+            self.proposalId = proposalId
+            self.poolCreator = poolCreator
+            self.amount = amount
+        }
+    }
 
     access(all) struct AdminRole {
         access(all) var adminAddress: Address
@@ -93,7 +106,7 @@ access(all) contract GrantHub {
 
     access(all) resource Proposal {
         access(all) let id: UInt64
-        access(all) let proposer: Address?
+        access(all) let proposer: Address
         access(all) var name: String
         access(all) var projectName: String
         access(all) var coverDescription: String
@@ -107,7 +120,7 @@ access(all) contract GrantHub {
 
         init(
             _id: UInt64,
-            _proposer: Address?,
+            _proposer: Address,
             _name: String,
             _projectName: String,
             _coverDescription: String,
@@ -128,20 +141,25 @@ access(all) contract GrantHub {
             self.vault <- FlowToken.createEmptyVault(vaultType: Type<@FlowToken.Vault>())
         }
 
+        access(all) fun setName(newName: String) {
+            self.name = newName
+        }
+
         access(all) fun fund(from: @{FungibleToken.Vault}, funder: Address) {
             if self.fundingCompleted {
                 destroy from
                 panic("Funding goal already reached. No more funds accepted.")
-            }
-            let amount = from.balance
-            self.vault.deposit(from: <- from)
-            self.funders[funder] = true
+            } else {
+                let amount = from.balance
+                self.vault.deposit(from: <- from)
+                self.funders[funder] = true
 
-            if self.vault.balance >= self.fundingGoal {
-                self.fundingCompleted = true
-                emit ProposalFundingCompleted(id: self.id)
+                if self.vault.balance >= self.fundingGoal {
+                    self.fundingCompleted = true
+                    emit ProposalFundingCompleted(id: self.id)
+                }
+                emit ProposalFunded(id: self.id, acct: funder, amount: amount)
             }
-            emit ProposalFunded(id: self.id, acct: funder, amount: amount)
         }
 
         access(all) fun createMilestone(name: String, description: String, amount: UFix64, deadline: UFix64): UInt64 {
@@ -182,7 +200,6 @@ access(all) contract GrantHub {
             if caller != self.proposer && !(GrantHub.adminRole?.isAdmin(addr: caller) == true) {
                 panic("Only proposer or admin can withdraw")
             }
-
             if amount > self.vault.balance {
                 panic("Amount exceeds available balance")
             }
@@ -210,6 +227,10 @@ access(all) contract GrantHub {
             self.amount = _amount
         }
 
+        access(all) fun setAmount(newAmount: UFix64) {
+            self.amount = newAmount
+        }
+
         access(all) fun fund(from: @{FungibleToken.Vault}) {
             let depositAmount = from.balance
             destroy from
@@ -218,7 +239,119 @@ access(all) contract GrantHub {
         }
     }
 
-    access(all) fun fundCommunityPool(from: @{FungibleToken.Vault}, fromAddress: Address?) {
+    access(all) fun createProposal(
+        proposer: Address,
+        name: String,
+        projectName: String,
+        coverDescription: String,
+        projectDescription: String,
+        fundingGoal: UFix64
+    ): UInt64 {
+        self.proposalCounter = self.proposalCounter + 1
+        let id = self.proposalCounter
+        let proposal <- create Proposal(
+            _id: id,
+            _proposer: proposer,
+            _name: name,
+            _projectName: projectName,
+            _coverDescription: coverDescription,
+            _projectDescription: projectDescription,
+            _fundingGoal: fundingGoal
+        )
+        self.proposals[id] <-! proposal
+
+        let meta = ProposalMeta(
+            id: id,
+            proposer: proposer,
+            name: name,
+            projectName: projectName,
+            coverDescription: coverDescription,
+            fundingGoal: fundingGoal
+        )
+        self.proposalMetas[id] = meta
+
+        emit ProposalCreated(
+            id: id,
+            from: proposer,
+            name: name,
+            projectName: projectName,
+            description: coverDescription,
+            amount: fundingGoal
+        )
+        return id
+    }
+
+    access(all) fun getProposalRef(id: UInt64): &Proposal? {
+        if self.proposals[id] == nil {
+            return nil
+        }
+        return (&self.proposals[id] as &Proposal?)
+    }
+
+    access(all) fun proposalExists(id: UInt64): Bool {
+        return self.proposals[id] != nil
+    }
+
+    access(all) fun createPool(
+        poolCreator: Address,
+        proposalId: UInt64,
+        amount: UFix64
+    ): UInt64 {
+        self.poolCounter = self.poolCounter + 1
+        let id = self.poolCounter
+        let pool <- create Pool(
+            _id: id,
+            _proposalId: proposalId,
+            _poolCreator: poolCreator,
+            _amount: amount
+        )
+        self.pools[id] <-! pool
+
+        let meta = PoolMeta(
+            id: id,
+            proposalId: proposalId,
+            poolCreator: poolCreator,
+            amount: amount
+        )
+        self.poolMetas[id] = meta
+
+        emit PoolCreated(poolID: id, proposalId: proposalId, from: poolCreator, amount: amount)
+        return id
+    }
+
+    access(all) fun getPoolRef(id: UInt64): &Pool? {
+        if self.pools[id] == nil {
+            return nil
+        }
+        return (&self.pools[id] as &Pool?)
+    }
+
+    access(all) fun poolExists(id: UInt64): Bool {
+        return self.pools[id] != nil
+    }
+
+    access(all) fun updateProposalName(id: UInt64, newName: String, caller: Address) {
+        let proposalRef = self.getProposalRef(id: id) ?? panic("Proposal not found")
+        if proposalRef.proposer != caller && !(self.adminRole?.isAdmin(addr: caller) == true) {
+            panic("Only proposer or admin can update proposal")
+        }
+        proposalRef.setName(newName: newName)
+    }
+
+    access(all) fun updatePoolAmount(id: UInt64, newAmount: UFix64, caller: Address) {
+        let poolRef = self.getPoolRef(id: id) ?? panic("Pool not found")
+        if poolRef.poolCreator != caller && !(self.adminRole?.isAdmin(addr: caller) == true) {
+            panic("Only pool creator or admin can update pool")
+        }
+        poolRef.setAmount(newAmount: newAmount)
+    }
+
+    access(all) fun fundProposal(proposalId: UInt64, from: @{FungibleToken.Vault}, funder: Address) {
+        let proposalRef = self.getProposalRef(id: proposalId) ?? panic("Proposal not found")
+        proposalRef.fund(from: <- from, funder: funder)
+    }
+
+    access(all) fun fundCommunityPool(from: @{FungibleToken.Vault}, fromAddress: Address) {
         let amount = from.balance
         self.communityPool.deposit(from: <- from)
         emit PoolFundingCompleted(amount: amount, from: fromAddress)
@@ -230,9 +363,7 @@ access(all) contract GrantHub {
         amount: UFix64,
         caller: Address
     ) {
-        let proposalPath = self.proposalPaths[proposalId]!
-        let proposalRef = self.account.storage.borrow<&Proposal>(from: proposalPath)
-            ?? panic("Proposal not found")
+        let proposalRef = self.getProposalRef(id: proposalId) ?? panic("Proposal not found")
         let isAuthorized = (proposalRef.proposer == caller) || (self.adminRole?.isAdmin(addr: caller) == true)
         if !isAuthorized {
             panic("Not authorized to withdraw for this proposal")
@@ -245,129 +376,6 @@ access(all) contract GrantHub {
         emit CommunityPoolWithdrawal(proposalId: proposalId, to: caller, amount: amount)
     }
 
-    access(all) fun getAllProposalMetas(): [ProposalMeta] {
-        return self.proposalMetas.values
-    }
-
-    access(all) resource interface ProposalManagerInterface {
-        access(all) fun createProposal(
-            acct: auth(Storage, Capabilities) &Account,
-            name: String,
-            projectName: String,
-            coverDescription: String,
-            projectDescription: String,
-            fundingGoal: UFix64
-        ): UInt64
-
-        access(all) fun getProposalRef(id: UInt64, acct: &Account): &Proposal?
-
-        access(all) fun createPool(acct: auth(Storage) &Account, proposalId: UInt64, amount: UFix64): UInt64
-
-        access(all) fun getPoolRef(id: UInt64,  acct: &Account): &Pool?
-    }
-
-    access(all) resource ProposalManager: ProposalManagerInterface {
-        access(all) fun createProposal(
-            acct: auth(Storage, Capabilities) &Account,
-            name: String,
-            projectName: String,
-            coverDescription: String,
-            projectDescription: String,
-            fundingGoal: UFix64
-        ): UInt64 {
-            GrantHub.proposalCounter = GrantHub.proposalCounter + 1
-            let id = GrantHub.proposalCounter
-            let proposer = acct.address
-            let proposal <- create Proposal(
-                _id: id,
-                _proposer: proposer,
-                _name: name,
-                _projectName: projectName,
-                _coverDescription: coverDescription,
-                _projectDescription: projectDescription,
-                _fundingGoal: fundingGoal
-            )
-
-            let path = StoragePath(identifier: "GrantHubProposal_".concat(id.toString()))!
-            let publicPath = PublicPath(identifier: "GrantHubProposal_".concat(id.toString()))!
-
-            acct.storage.save(<-proposal, to: path)
-            GrantHub.proposalPaths[id] = path
-
-            if !acct.capabilities.get<&Proposal>(publicPath).check() {
-                let cap = acct.capabilities.storage.issue<&Proposal>(path)
-                acct.capabilities.publish(cap, at: publicPath)
-            }
-
-            let meta = GrantHub.ProposalMeta(
-                id: id,
-                proposer: proposer,
-                name: name,
-                projectName: projectName,
-                coverDescription: coverDescription,
-                fundingGoal: fundingGoal
-            )
-            GrantHub.proposalMetas[id] = meta
-
-            emit ProposalCreated(
-                id: id,
-                from: proposer,
-                name: name,
-                projectName: projectName,
-                description: coverDescription,
-                amount: fundingGoal
-            )
-            return id
-        }
-
-        access(all) fun getProposalRef(id: UInt64, acct: &Account): &Proposal? {
-            let publicPath = PublicPath(identifier: "GrantHubProposal_".concat(id.toString()))!
-            let cap = acct.capabilities.get<&Proposal>(publicPath)
-            return cap.borrow()
-        }
-
-        access(all) fun createPool(
-            acct: auth(Storage) &Account,
-            proposalId: UInt64,
-            amount: UFix64
-        ): UInt64 {
-            GrantHub.poolCounter = GrantHub.poolCounter + 1
-            let id = GrantHub.poolCounter
-            let pool <- create Pool(
-                _id: id,
-                _proposalId: proposalId,
-                _poolCreator: acct.address,
-                _amount: amount
-            )
-
-            let path = StoragePath(identifier: "GrantHubPool_".concat(id.toString()))!
-
-            acct.storage.save(<-pool, to: path)
-            GrantHub.poolPaths[id] = path
-
-            emit PoolCreated(poolID: id, proposalId: proposalId, from: acct.address, amount: amount)
-            return id
-        }
-
-        access(all) fun getPoolRef(id: UInt64,  acct: &Account): &Pool? {
-            let publicPath = PublicPath(identifier: "GrantHubPool_".concat(id.toString()))!
-            let cap = acct.capabilities.get<&Pool>(publicPath)
-            return cap.borrow()
-        }
-    }
-
-    access(all) fun createProposalManager(): @ProposalManager {
-        return <-create ProposalManager()
-    }
-
-    access(all) fun getProposalBalance(proposalId: UInt64): UFix64 {
-        let proposalPath = self.proposalPaths[proposalId] 
-            ?? panic("Proposal not found")
-        let proposalRef = self.account.storage.borrow<&Proposal>(from: proposalPath)
-            ?? panic("Proposal not found in storage")
-        return proposalRef.vault.balance
-    }
-
     access(all) fun setAdmin(newAdmin: Address) {
         if self.adminRole == nil || self.adminRole!.isAdmin(addr: self.account.address) {
             self.adminRole = AdminRole(admin: newAdmin)
@@ -376,17 +384,27 @@ access(all) contract GrantHub {
         }
     }
 
-    init() {
-        self.FgrantPublicPath = /public/FgrantPublic
-        self.FgrantPrivatePath = /private/FgrantPrivate
-        self.FgrantStoragePath = /storage/FgrantStorage
+    access(all) fun getProposalBalance(proposalId: UInt64): UFix64 {
+        let proposalRef = self.getProposalRef(id: proposalId) 
+            ?? panic("Proposal not found")
+        return proposalRef.vault.balance
+    }
 
+    access(all) fun getAllProposalMetas(): [ProposalMeta] {
+        return self.proposalMetas.values
+    }
+
+    access(all) fun getAllPoolMetas(): [PoolMeta] {
+        return self.poolMetas.values
+    }
+
+    init() {
         self.proposalCounter = 0
         self.poolCounter = 0
-        self.proposalPaths = {}
-        self.poolPaths = {}
+        self.proposals <- {}
+        self.pools <- {}
         self.proposalMetas = {}
-
+        self.poolMetas = {}
         self.adminRole = AdminRole(admin: self.account.address)
         self.communityPool <- FlowToken.createEmptyVault(vaultType: Type<@FlowToken.Vault>())
         emit ContractInitialized()
