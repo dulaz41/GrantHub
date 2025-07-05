@@ -67,14 +67,14 @@ const Project: React.FC = () => {
             aria-label="Global"
           >
             <div className="flex lg:min-w-0 lg:flex-1">
-              <a href="/" className="-m-1.5 p-1.5">
-                <span className="sr-only">Granthub</span>
-                <Image
-                  className="flex-shrink-0 lg:w-[180px] lg:h-[38px] md:w-[182px] w-[120px] h-[25px]"
-                  src={logo}
-                  alt="logo"
-                />
-              </a>
+              <a href="/" className="-m-1.5 p-1">
+            <span className="sr-only">Granthub</span>
+            <Image
+              className="flex-shrink-0 lg:w-[190px] lg:h-[72px] md:w-[182px] w-[120px] h-[55px] "
+              src={logo}
+              alt="logo"
+            />
+          </a>
             </div>
           </nav>
         </header>
