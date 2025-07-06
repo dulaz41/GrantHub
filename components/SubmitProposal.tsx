@@ -76,7 +76,7 @@ const SubmitProposal: React.FC = () => {
     try {
       const signatures = await fcl.currentUser.signUserMessage(MSG);
       const signature = signatures[0]; // Extract the first signature from the array
-      return signature;
+      return signature.signature; // Access the signature property
     } catch (error) {
       console.log(error);
       return undefined;

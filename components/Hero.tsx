@@ -117,20 +117,19 @@ const Hero: React.FC<HeroProps> = ({ isConnected, onClick }) => {
               Unleash your vision to drive success by funding and proposing revolutionary projects today!
             </p>
             <div className="lg:mt-8 flex gap-x-2 mb-2  lg:justify-center items-center justify-center ">
-              <Link href={isConnected ? "/dashboard" : "#"}
-                legacyBehavior passHref>
-                <a
-                  onClick={() => {
-                    if (!isConnected) {
-                      alert("Please connect to your wallet before you proceed");
-                    }
-                  }}
-                  className="rounded-md bg-white lg:text-xl text-base lg:px-7 p-2 lg:py-5 justify-center cursor-pointer flex font-medium text-[#00EF8B] shadow-sm hover:bg-[#00EF8B] hover:text-white">
-                  Get started
-                  <span className="text[#00EF8B] hover:text-white ml-2 bg-inherit" aria-hidden="true">
-                    &rarr;
-                  </span>
-                </a>
+              <Link 
+                href={isConnected ? "/dashboard" : "#"}
+                onClick={() => {
+                  if (!isConnected) {
+                    alert("Please connect to your wallet before you proceed");
+                  }
+                }}
+                className="rounded-md bg-white lg:text-xl text-base lg:px-7 p-2 lg:py-5 justify-center cursor-pointer flex font-medium text-[#00EF8B] shadow-sm hover:bg-[#00EF8B] hover:text-white"
+              >
+                Get started
+                <span className="text[#00EF8B] hover:text-white ml-2 bg-inherit" aria-hidden="true">
+                  &rarr;
+                </span>
               </Link>
             </div>
           </div>

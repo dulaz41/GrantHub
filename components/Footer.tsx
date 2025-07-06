@@ -89,19 +89,19 @@ const Footer: React.FC<HeroProps> = ({ isConnected, onClick }) => {
               </AnimatePresence>
             </div>
             <div className="mt-3 flex mb-4 lg:justify-center items-center justify-center">
-              <Link href={isConnected ? "/dashboard" : "#"} legacyBehavior passHref>
-                <a
-                  onClick={() => {
-                    if (!isConnected) {
-                      alert("Please connect to your wallet before you proceed");
-                    }
-                  }}
-                  className="rounded-md bg-white lg:text-xl text-base lg:px-7 p-2 lg:py-5 lg:mb-0 mb-4 -mt-4 justify-center flex font-medium text-[#00EF8B] shadow-sm hover:bg-[#07a261] hover:text-white">
-                  Get started
-                  <span className="text[#00EF8B] hover:text-white ml-2 bg-inherit" aria-hidden="true">
-                    &rarr;
-                  </span>
-                </a>
+              <Link 
+                href={isConnected ? "/dashboard" : "#"}
+                onClick={() => {
+                  if (!isConnected) {
+                    alert("Please connect to your wallet before you proceed");
+                  }
+                }}
+                className="rounded-md bg-white lg:text-xl text-base lg:px-7 p-2 lg:py-5 lg:mb-0 mb-4 -mt-4 justify-center flex font-medium text-[#00EF8B] shadow-sm hover:bg-[#07a261] hover:text-white"
+              >
+                Get started
+                <span className="text[#00EF8B] hover:text-white ml-2 bg-inherit" aria-hidden="true">
+                  &rarr;
+                </span>
               </Link>
             </div>
           </div>
