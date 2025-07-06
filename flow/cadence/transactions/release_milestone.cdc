@@ -3,8 +3,7 @@ import FungibleToken from 0x9a0766d93b6608b7
 
 transaction(proposalId: UInt64, milestoneId: UInt64, recipient: Address) {
     prepare(acct: auth(Storage) &Account) {
-        let manager <- GrantHub.createProposalManager()
-        let proposalRef = manager.getProposalRef(id: proposalId, acct: acct)
+        let proposalRef = GrantHub.getProposalRef(id: proposalId, acct: acct)
             ?? panic("Proposal not found")
 
         let recipientAcct = getAccount(recipient)
@@ -12,7 +11,6 @@ transaction(proposalId: UInt64, milestoneId: UInt64, recipient: Address) {
             ?? panic("Recipient has no FlowToken receiver")
 
         proposalRef.releaseMilestone(milestoneId: milestoneId, recipient: receiverRef)
-        destroy manager
         log("Released milestone ".concat(milestoneId.toString()))
     }
 }

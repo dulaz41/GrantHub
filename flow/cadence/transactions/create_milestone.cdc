@@ -8,8 +8,8 @@ transaction(
     deadline: UFix64
 ) {
     prepare(acct: auth(Storage) &Account) {
-        let manager <- GrantHub.createProposalManager()
-        let proposalRef = manager.getProposalRef(id: proposalId, acct: acct)
+        let proposer = acct.address
+        let proposalRef = GrantHub.getProposalRef(id: proposalId, acct: acct)
             ?? panic("Proposal not found")
         let milestoneId = proposalRef.createMilestone(
             name,
@@ -18,7 +18,6 @@ transaction(
             deadline
         )
 
-        destroy manager
         log("Created milestone with ID ".concat(milestoneId.toString()))
     }
 }
