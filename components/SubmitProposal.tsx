@@ -120,10 +120,10 @@ const SubmitProposal: React.FC = () => {
     `,
         args: (arg, t) => [
           arg(formData.name, t.String),
-          arg(formData.name, t.String), // This should probably be a different field
+          arg(formData.name, t.String),
           arg(formData.description, t.String),
           arg(formData.message, t.String),
-          arg(formData.amount, t.UFix64), // Changed: Pass string directly to t.UFix64
+          arg(formData.amount, t.UFix64),
         ],
         proposer: fcl.currentUser,
         payer: fcl.currentUser,
