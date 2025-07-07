@@ -5,6 +5,7 @@ import logo from "../public/images/logo.png";
 import AWS from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 import * as fcl from "@onflow/fcl";
+import Notification from "./Notification";
 
 require("dotenv").config();
 
@@ -36,6 +37,23 @@ const SubmitProposal: React.FC = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [fileError, setFileError] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [notification, setNotification] = useState({
+    isVisible: false,
+    type: 'success' as 'success' | 'error' | 'info' | 'loading',
+    message: ''
+  });
+
+  const showNotification = (type: 'success' | 'error' | 'info' | 'loading', message: string) => {
+    setNotification({
+      isVisible: true,
+      type,
+      message
+    });
+  };
+
+  const hideNotification = () => {
+    setNotification(prev => ({ ...prev, isVisible: false }));
+  };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -93,6 +111,8 @@ const SubmitProposal: React.FC = () => {
 
     // Call the Flow mutate function to create the proposal
     try {
+      showNotification('loading', 'Submitting your proposal...');
+      
       const transactionId = await fcl.mutate({
         cadence: `
         import GrantHub from 0x507dc1ab87c6636f
@@ -120,24 +140,35 @@ const SubmitProposal: React.FC = () => {
     `,
         args: (arg, t) => [
           arg(formData.name, t.String),
-          arg(formData.name, t.String), // This should probably be a different field
+          arg(formData.name, t.String),
           arg(formData.description, t.String),
           arg(formData.message, t.String),
-          arg(formData.amount, t.UFix64), // Changed: Pass string directly to t.UFix64
+          arg(formData.amount, t.UFix64),
         ],
         proposer: fcl.currentUser,
         payer: fcl.currentUser,
         authorizations: [fcl.currentUser],
         limit: 50,
       });
+      
+      // Hide loading notification
+      hideNotification();
+      
       // log the transaction ID
       console.log("Transaction ID:", transactionId);
       // Wait for the transaction to be executed
       const transaction = await fcl.tx(transactionId).onceExecuted();
       console.log(transaction);
       console.log("Proposal created successfully.");
+      
+      // Show success notification
+      showNotification('success', 'Proposal submitted successfully! 🎉');
+      
     } catch (error) {
+      // Hide loading notification
+      hideNotification();
       console.log(error);
+      showNotification('error', 'Failed to submit proposal. Please try again.');
     }
 
     // Reset the form
@@ -174,6 +205,13 @@ const SubmitProposal: React.FC = () => {
 
   return (
     <>
+      <Notification
+        type={notification.type}
+        message={notification.message}
+        isVisible={notification.isVisible}
+        onClose={hideNotification}
+        duration={4000}
+      />
       <div className="flex items-start flex-col bg-white w-[100%] mt-[68px] -ml-4">
         <header className="fixed inset-x-0 mb-12 top-0 sm-custom:z-50">
           <nav

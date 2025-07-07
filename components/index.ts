@@ -10,7 +10,8 @@ import SubmitProposal from "./SubmitProposal";
 import Profile from "./Profile";
 import Proposals from "../app/proposal/Proposals";
 import Description from "../app/activeproposal/page";
+import Notification from "./Notification";
 
 export {
-    Hero, Navbar, Footer, BarChart, Dashboard, ActiveProposal, Project, Campaign, SubmitProposal, Profile, Proposals, Description
+    Hero, Navbar, Footer, BarChart, Dashboard, ActiveProposal, Project, Campaign, SubmitProposal, Profile, Proposals, Description, Notification
 }

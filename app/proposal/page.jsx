@@ -8,6 +8,7 @@ import Link from "next/link";
 import { FiCopy } from "react-icons/fi";
 import logo from "../../public/images/logo.png";
 import * as fcl from "@onflow/fcl";
+import Notification from "../../components/Notification";
 
 const Description = () => {
   const searchParams = useSearchParams();
@@ -49,6 +50,25 @@ const Description = () => {
   const [inputValues, setInputValues] = useState(initialValues);
   const [inputFunds, setInputFunds] = useState(initialFunds);
   const [showNotification, setShowNotification] = useState(false);
+  const [proposalBalance, setProposalBalance] = useState(0);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+  const [notification, setNotification] = useState({
+    isVisible: false,
+    type: 'success',
+    message: ''
+  });
+
+  const showNotificationPopup = (type, message) => {
+    setNotification({
+      isVisible: true,
+      type,
+      message
+    });
+  };
+
+  const hideNotificationPopup = () => {
+    setNotification(prev => ({ ...prev, isVisible: false }));
+  };
 
   const handleCopyClick = (index) => {
     const valueToCopy = inputValues[index].example;
@@ -80,6 +100,13 @@ const Description = () => {
   const handleSubmit = async () => {
     // Perform your desired actions with the inputFunds data
     console.log(inputFunds);
+    
+    // Validate funding amount
+    if (!inputFunds[0].value || parseFloat(inputFunds[0].value) <= 0) {
+      showNotificationPopup('error', 'Please enter a valid funding amount');
+      return;
+    }
+    
     const signMessage = async () => {
       const wallet = await fcl.authenticate();
       const MSG = Buffer.from(
@@ -99,6 +126,8 @@ const Description = () => {
 
     // Call the Flow mutate function to fund the proposal
     try {
+      showNotificationPopup('loading', 'Processing your funding transaction...');
+      
       const transactionId = await fcl.mutate({
         cadence: `
           import GrantHub from 0x507dc1ab87c6636f
@@ -120,21 +149,36 @@ const Description = () => {
         `,
         args: (arg, t) => [
           arg(projectData.id, t.UInt64),
-          arg(inputFunds[0].value, t.UFix64), // Assuming the first input field is the funding amount
+          arg(inputFunds[0].value, t.UFix64), 
         ],
         proposer: fcl.currentUser,
         payer: fcl.currentUser,
         authorizations: [fcl.currentUser],
         limit: 50,
       });
+      
+      // Hide loading notification
+      hideNotificationPopup();
+      
       // log the transaction ID
       console.log("Transaction ID:", transactionId);
       // Wait for the transaction to be executed
       const transaction = await fcl.tx(transactionId).onceExecuted();
       console.log(transaction);
-      console.log("Proposal created successfully.");
+      console.log("Proposal funded successfully.");
+      
+      // Show success notification
+      showNotificationPopup('success', `Successfully funded ${inputFunds[0].value} FLOW! 🎉`);
+      
+      // Refresh the proposal balance after successful funding
+      if (projectData?.id) {
+        await getProposalBalance(projectData.id);
+      }
     } catch (error) {
+      // Hide loading notification
+      hideNotificationPopup();
       console.log(error);
+      showNotificationPopup('error', 'Failed to fund proposal. Please try again.');
     }
     // Reset the form if needed
     if (projectData) {
@@ -215,6 +259,8 @@ const Description = () => {
         proposer: proposer || "Unknown",
         status: status || "Unknown",
       });
+      
+      getProposalBalance(id);
     }
     setIsLoading(false);
 
@@ -231,7 +277,7 @@ const Description = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [searchParams]);
 
-  // Update input funds when project data changes
+
   useEffect(() => {
     if (projectData) {
       setInputFunds([
@@ -256,6 +302,37 @@ const Description = () => {
       ]);
     }
   }, [projectData]);
+
+  // Function to get proposal balance
+  const getProposalBalance = async (proposalId) => {
+    if (!proposalId) return;
+
+    setIsLoadingBalance(true);
+    try {
+      const GET_PROPOSAL_BALANCE = `
+        import GrantHub from 0x507dc1ab87c6636f
+
+        access(all) fun main(proposalId: UInt64): UFix64 {
+            return GrantHub.getProposalBalance(proposalId: proposalId)
+        }
+      `;
+
+      const balance = await fcl.query({
+        cadence: GET_PROPOSAL_BALANCE,
+        args: (arg, t) => [arg(proposalId, t.UInt64)],
+      });
+
+
+      const flowBalance = parseFloat(balance);
+      setProposalBalance(flowBalance);
+      console.log(`Proposal ${proposalId} balance:`, flowBalance, "FLOW");
+    } catch (error) {
+      console.error("Error fetching proposal balance:", error);
+      setProposalBalance(0);
+    } finally {
+      setIsLoadingBalance(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -283,6 +360,13 @@ const Description = () => {
 
   return (
     <>
+      <Notification
+        type={notification.type}
+        message={notification.message}
+        isVisible={notification.isVisible}
+        onClose={hideNotificationPopup}
+        duration={4000}
+      />
       <div className="flex items-start flex-col bg-white mt-8  ">
         <header className="fixed inset-x-0 mb-4 top-0 sm-custom:z-50">
           <nav
@@ -384,9 +468,29 @@ const Description = () => {
                     </h3>
                   </div>
                 </div>
-                <p className=" text-black lg:text-[24px] text-[12px] text-center font-semibold ">
-                  $FLOW {projectData?.fundingGoal || "0"}
-                </p>
+                <div className="flex flex-col items-end">
+                  <p className=" text-black lg:text-[24px] text-[12px] text-center font-semibold ">
+                    Goal: $FLOW {projectData?.fundingGoal || "0"}
+                  </p>
+                  <p className=" text-[#00EF8B] lg:text-[20px] text-[10px] text-center font-semibold ">
+                    {isLoadingBalance ? "Loading..." : `Raised: $FLOW ${proposalBalance.toFixed(2)}`}
+                  </p>
+                  {projectData?.fundingGoal && proposalBalance > 0 && (
+                    <div className="w-full mt-2">
+                      <div className="bg-gray-200 rounded-full h-2 lg:w-[200px] w-[120px]">
+                        <div 
+                          className="bg-[#00EF8B] h-2 rounded-full transition-all duration-300"
+                          style={{
+                            width: `${Math.min((proposalBalance / parseFloat(projectData.fundingGoal)) * 100, 100)}%`
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {((proposalBalance / parseFloat(projectData.fundingGoal)) * 100).toFixed(1)}% funded
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="flex justify-between lg:pt-[48px] pt-[16px] gap-y-4">
                 <p className=" text-[#626262] lg:text-[30px] text-[16px] text-center font-semibold ">

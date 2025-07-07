@@ -54,15 +54,8 @@ const Project: React.FC = () => {
       );
 
       setProjects(fundedProjects);
-      // console.log(formattedProjects)
     }
     getProposal();
-    // .then((response) => response)
-    // .then((data) => {
-    //     console.log(data);
-    //     // setProjects(data);
-    //     console.log(projects);
-    // });
 
     window.addEventListener("scroll", handleScroll);
 
