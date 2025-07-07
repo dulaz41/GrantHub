@@ -10,11 +10,11 @@ GrantHub allows project owners to submit proposals for funding, break them into 
 
 The platform leverages:
 
-✅ Cadence smart contracts (Flow blockchain)
-✅ A Flow CLI-driven developer workflow
-✅ React-based front-end (optional)
-✅ Robust capability-based permission models
-✅ Events for easy off-chain indexing
+✅ Cadence smart contracts (Flow blockchain)<br>
+✅ A Flow CLI-driven developer workflow<br>
+✅ React-based front-end (optional)<br>
+✅ Robust capability-based permission models<br>
+✅ Events for easy off-chain indexing<br>
 
 ---
 
@@ -60,10 +60,10 @@ You can scaffold the frontend with any framework, but React + TailwindCSS is hig
 
 A **developer CLI** built around the Flow CLI to test, deploy, and script interactions:
 
-✅ Deploy contracts
-✅ Run transactions
-✅ Run scripts
-✅ View events and logs
+✅ Deploy contracts<br>
+✅ Run transactions<br>
+✅ Run scripts<br>
+✅ View events and logs<br>
 
 We provide starter scripts for:
 
@@ -82,17 +82,17 @@ We provide starter scripts for:
 Clone this repository:
 
 ```bash
-git clone https://github.com/yourusername/GrantHub.git
+git clone https://github.com/dulaz41/GrantHub.git
 cd GrantHub
 ```
 
 Set up your Flow project:
 
 ```bash
-flow setup
+flow init
 ```
 
-Configure your `.env` to include your Flow emulator, testnet, or mainnet addresses.
+Configure your `flow.json` to include your Flow emulator, testnet, or mainnet addresses.
 
 ---
 
@@ -102,7 +102,7 @@ Configure your `.env` to include your Flow emulator, testnet, or mainnet address
 2. Deploy `GrantHub.cdc` with your admin account.
 
 ```bash
-flow deploy
+flow accounts add-contract cadence/contracts/GrantHub.cdc --signer XXXX --network testnet
 ```
 
 Update contract addresses in your front-end and scripts accordingly.
@@ -191,29 +191,11 @@ For all available commands, see `scripts/` and `transactions/`.
 
 ## 🔒 Security Considerations
 
-✅ Withdrawals only by proposer or admin
-✅ Resources used to enforce unique ownership
-✅ Vaults protect against double spends
-✅ Capability-based publishing prevents unauthorized access
-✅ Audit-friendly event emission
-
----
-
-## 📝 Testing
-
-We recommend writing unit tests for the contracts using the Flow emulator:
-
-```bash
-flow emulator start
-```
-
-Then run:
-
-```bash
-flow test
-```
-
-You can also run your React app against the emulator for a full local development loop.
+✅ Withdrawals only by proposer or admin<br>
+✅ Resources used to enforce unique ownership<br>
+✅ Vaults protect against double spends<br>
+✅ Capability-based publishing prevents unauthorized access<br>
+✅ Audit-friendly event emission<br>
 
 ---
 
@@ -247,7 +229,3 @@ MIT — please see the `LICENSE` file.
 
 Built on Flow blockchain using Cadence.
 Thanks to the Flow community for resources and open discussions.
-
----
-
-If you want, I can **also scaffold your React front-end structure** with all folders and starter files — just let me know! 🚀
