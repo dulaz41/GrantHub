@@ -94,32 +94,17 @@ const Description = () => {
         cadence: GET_ALL_PROPS,
       });
 
+      console.log(response);
+
       const formattedProjects = response.map((project) => ({
         ...project,
         fundingGoal: Math.floor(project.fundingGoal),
         funded: project.fundingCompleted ? "Funded" : "In Review",
       }));
       setProjects(formattedProjects);
-      // console.log(formattedProjects);
+      console.log(formattedProjects);
     }
     getProposal();
-
-    async function fetchFormData() {
-      try {
-        const wallet = await fcl.logIn();
-        const response = await fetch(`http://16.170.224.207/profile/${wallet.addr}`);
-        if (response.ok) {
-          const data = await response.json();
-          setFormData(data);
-        } else {
-          console.error('Failed to fetch form data');
-        }
-      } catch (error) {
-        console.error('Error while fetching form data:', error);
-      }
-    }
-
-    fetchFormData();
 
     window.addEventListener("scroll", handleScroll);
 
@@ -200,7 +185,7 @@ const Description = () => {
                   <div className="space-y-[28px] flex flex-col my-[64px] lg:h-[116px] lg:w-[100%]">
                     <p className="text-[#303030] lg:text-2xl text-sm">
                       
-                    {project.projectDescription}
+                    {project.coverDescription}
                     </p>
                   </div>
                   <div className="lg:pl-[46px] flex lg:flex-row gap-y-6 items-center flex-col mb-[68px] lg:pt-[128px] ">
@@ -257,17 +242,19 @@ const Description = () => {
                     </p>
                     <div className="flex  space-x-[40px] justify-center">
                       <div className="">
-                        <Link href="/proposal" legacyBehavior passHref>
-                          <a className="text-center text-black font-semibold lg:py-[10px] cursor-pointer p-2 lg:px-[30px] bg-[#00EF8B] text-[20px] lg:text-[30px]">
-                            Fund
-                          </a>
+                        <Link 
+                          href={`/proposal?id=${project.id}&name=${encodeURIComponent(project.name)}&projectName=${encodeURIComponent(project.projectName)}&fundingGoal=${project.fundingGoal}&description=${encodeURIComponent(project.coverDescription)}&proposer=${encodeURIComponent(project.proposer)}&status=${encodeURIComponent(project.funded)}`}
+                          className="text-center text-black font-semibold lg:py-[10px] cursor-pointer p-2 lg:px-[30px] bg-[#00EF8B] text-[20px] lg:text-[30px]"
+                        >
+                          Fund
                         </Link>
                       </div>
                       <div className="">
-                        <Link href="/dashboard" legacyBehavior passHref>
-                          <a className="text-center text-black font-semibold lg:py-[10px] cursor-pointer p-2 lg:px-[30px] bg-[#00EF8B] text-[20px] lg:text-[30px]">
-                            Partner
-                          </a>
+                        <Link 
+                          href="/dashboard"
+                          className="text-center text-black font-semibold lg:py-[10px] cursor-pointer p-2 lg:px-[30px] bg-[#00EF8B] text-[20px] lg:text-[30px]"
+                        >
+                          Partner
                         </Link>
                       </div>
                     </div>

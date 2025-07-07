@@ -1,16 +1,5 @@
 "use client"
-import React, { useState } from "react";
-import { FilterButtonProps, MenuProps, ChartData } from "../interface/interface";
-import wallet from '../public/assets/wallet.png';
-import handcash from '../public/assets/handcash.png';
-import line from '../public/assets/line.png';
-import up from '../public/assets/up.png';
-import user from '../public/assets/Ellipse.png';
-import copy from '../public/assets/copy.png';
-import paste from '../public/assets/paste.png';
-import Image from "next/image";
-import BarChart from "./BarChart";
-import { UserData } from '../Data'
+import React from "react";
 import Dashboard from "./Dashboard";
 import ActiveProposal from "../app/activeproposal/ActiveProposal";
 import Project from "../app/project/Project";
@@ -22,7 +11,7 @@ import Proposals from "../app/proposal/Proposals";
 
 
 
-const MainContent: React.FC<{ activeItem: string }> = ({ activeItem }, { labels, datasets }: ChartData) => {
+const MainContent: React.FC<{ activeItem: string }> = ({ activeItem }) => {
     const renderContent = () => {
         switch (activeItem) {
             case "home":

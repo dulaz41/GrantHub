@@ -14,7 +14,11 @@ import { UserData } from '../Data'
 import { ChartData } from "../interface/interface";
 import logo from "../public/images/logo.png";
 import * as fcl from "@onflow/fcl";
-import "../flow/config";
+
+// Dynamic import for FCL config to avoid SSR issues
+if (typeof window !== 'undefined') {
+  import("../flow/config");
+}
 
 
 const Dashboard: React.FC<ChartData> = ({ labels, datasets }: ChartData) => {
