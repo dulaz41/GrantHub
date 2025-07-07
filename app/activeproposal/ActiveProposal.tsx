@@ -31,7 +31,7 @@ const Project: React.FC = () => {
 
     async function getProposal() {
       const GET_ALL_PROPS = `
-            import GrantHub from 0xb9b9e5ad5de42ef6
+            import GrantHub from 0x507dc1ab87c6636f
 
             access(all) fun main(): [GrantHub.ProposalMeta] {
                 return GrantHub.getAllProposalMetas()
@@ -70,13 +70,13 @@ const Project: React.FC = () => {
           >
             <div className="flex lg:min-w-0 lg:flex-1">
               <a href="/" className="-m-1.5 p-1">
-            <span className="sr-only">Granthub</span>
-            <Image
-              className="flex-shrink-0 lg:w-[190px] lg:h-[72px] md:w-[182px] w-[120px] h-[55px] "
-              src={logo}
-              alt="logo"
-            />
-          </a>
+                <span className="sr-only">Granthub</span>
+                <Image
+                  className="flex-shrink-0 lg:w-[190px] lg:h-[72px] md:w-[182px] w-[120px] h-[55px] "
+                  src={logo}
+                  alt="logo"
+                />
+              </a>
             </div>
           </nav>
         </header>

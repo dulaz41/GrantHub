@@ -13,7 +13,7 @@ const Description = () => {
   const [isScrollingUp, setIsScrollingUp] = useState(false);
   const [formData, setFormData] = useState(null);
 
-    const initialValues = [
+  const initialValues = [
     { type: "email", label: "Email", key: "email" },
     { type: "website", label: "Website", key: "website" },
     { type: "phone", label: "Phone Number", key: "phone" },
@@ -72,7 +72,6 @@ const Description = () => {
     );
   };
 
-
   useEffect(() => {
     let prevScrollPos = window.scrollY;
 
@@ -82,9 +81,9 @@ const Description = () => {
       prevScrollPos = currentScrollPos;
     };
 
-     async function getProposal() {
+    async function getProposal() {
       const GET_ALL_PROPS = `
-            import GrantHub from 0xb9b9e5ad5de42ef6
+            import GrantHub from 0x507dc1ab87c6636f
 
             access(all) fun main(): [GrantHub.ProposalMeta] {
                 return GrantHub.getAllProposalMetas()
@@ -134,13 +133,13 @@ const Description = () => {
           >
             <div className="flex lg:min-w-0 lg:flex-1">
               <a href="/" className="-m-1.5 p-1">
-            <span className="sr-only">Granthub</span>
-            <Image
-              className="flex-shrink-0 lg:w-[190px] lg:h-[72px] md:w-[182px] w-[120px] h-[55px] "
-              src={logo}
-              alt="logo"
-            />
-          </a>
+                <span className="sr-only">Granthub</span>
+                <Image
+                  className="flex-shrink-0 lg:w-[190px] lg:h-[72px] md:w-[182px] w-[120px] h-[55px] "
+                  src={logo}
+                  alt="logo"
+                />
+              </a>
             </div>
           </nav>
         </header>
@@ -184,8 +183,7 @@ const Description = () => {
                   </div>
                   <div className="space-y-[28px] flex flex-col my-[64px] lg:h-[116px] lg:w-[100%]">
                     <p className="text-[#303030] lg:text-2xl text-sm">
-                      
-                    {project.coverDescription}
+                      {project.coverDescription}
                     </p>
                   </div>
                   <div className="lg:pl-[46px] flex lg:flex-row gap-y-6 items-center flex-col mb-[68px] lg:pt-[128px] ">
@@ -242,15 +240,27 @@ const Description = () => {
                     </p>
                     <div className="flex  space-x-[40px] justify-center">
                       <div className="">
-                        <Link 
-                          href={`/proposal?id=${project.id}&name=${encodeURIComponent(project.name)}&projectName=${encodeURIComponent(project.projectName)}&fundingGoal=${project.fundingGoal}&description=${encodeURIComponent(project.coverDescription)}&proposer=${encodeURIComponent(project.proposer)}&status=${encodeURIComponent(project.funded)}`}
+                        <Link
+                          href={`/proposal?id=${
+                            project.id
+                          }&name=${encodeURIComponent(
+                            project.name
+                          )}&projectName=${encodeURIComponent(
+                            project.projectName
+                          )}&fundingGoal=${
+                            project.fundingGoal
+                          }&description=${encodeURIComponent(
+                            project.coverDescription
+                          )}&proposer=${encodeURIComponent(
+                            project.proposer
+                          )}&status=${encodeURIComponent(project.funded)}`}
                           className="text-center text-black font-semibold lg:py-[10px] cursor-pointer p-2 lg:px-[30px] bg-[#00EF8B] text-[20px] lg:text-[30px]"
                         >
                           Fund
                         </Link>
                       </div>
                       <div className="">
-                        <Link 
+                        <Link
                           href="/dashboard"
                           className="text-center text-black font-semibold lg:py-[10px] cursor-pointer p-2 lg:px-[30px] bg-[#00EF8B] text-[20px] lg:text-[30px]"
                         >

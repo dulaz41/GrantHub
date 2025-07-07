@@ -29,6 +29,7 @@ access(all) contract GrantHub {
         access(all) let projectName: String
         access(all) let coverDescription: String
         access(all) let fundingGoal: UFix64
+        access(all) var fundingCompleted: Bool
 
         init(
             id: UInt64,
@@ -36,7 +37,8 @@ access(all) contract GrantHub {
             name: String,
             projectName: String,
             coverDescription: String,
-            fundingGoal: UFix64
+            fundingGoal: UFix64,
+            fundingCompleted: Bool
         ) {
             self.id = id
             self.proposer = proposer
@@ -44,6 +46,7 @@ access(all) contract GrantHub {
             self.projectName = projectName
             self.coverDescription = coverDescription
             self.fundingGoal = fundingGoal
+            self.fundingCompleted = fundingCompleted
         }
     }
 
@@ -156,6 +159,17 @@ access(all) contract GrantHub {
 
                 if self.vault.balance >= self.fundingGoal {
                     self.fundingCompleted = true
+                    let oldMeta = GrantHub.proposalMetas[self.id]!
+                    let newMeta = ProposalMeta(
+                        id: oldMeta.id,
+                        proposer: oldMeta.proposer,
+                        name: oldMeta.name,
+                        projectName: oldMeta.projectName,
+                        coverDescription: oldMeta.coverDescription,
+                        fundingGoal: oldMeta.fundingGoal,
+                        fundingCompleted: true
+                    )
+                    GrantHub.proposalMetas[self.id] = newMeta
                     emit ProposalFundingCompleted(id: self.id)
                 }
                 emit ProposalFunded(id: self.id, acct: funder, amount: amount)
@@ -266,7 +280,8 @@ access(all) contract GrantHub {
             name: name,
             projectName: projectName,
             coverDescription: coverDescription,
-            fundingGoal: fundingGoal
+            fundingGoal: fundingGoal,
+            fundingCompleted: false
         )
         self.proposalMetas[id] = meta
 

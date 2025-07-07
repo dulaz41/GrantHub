@@ -1,4 +1,4 @@
-import GrantHub from 0xb9b9e5ad5de42ef6
+import GrantHub from 0x507dc1ab87c6636f
 
 transaction(proposalId: UInt64, newName: String) {
     prepare(acct: auth(Storage) &Account) {

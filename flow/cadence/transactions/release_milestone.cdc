@@ -1,4 +1,4 @@
-import GrantHub from 0xb9b9e5ad5de42ef6
+import GrantHub from 0x507dc1ab87c6636f
 import FungibleToken from 0x9a0766d93b6608b7
 
 transaction(proposalId: UInt64, milestoneId: UInt64, recipient: Address) {

@@ -1,81 +1,97 @@
 {
-  "contracts": {
-    "Fgrant": {
-      "source": "./flow/cadence/contracts/Fgrant.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "testnet": "87a223d6f50ca9ed"
-      }
-    },
-    "FlowToken": {
-      "source": "./flow/cadence/contracts/FlowToken.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "testnet": "87a223d6f50ca9ed"
-      }
-    },
-    "FungibleToken": {
-      "source": "./flow/cadence/contracts/FungibleToken.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "testnet": "87a223d6f50ca9ed"
-      }
-    },
-    "GrantHub": "cadence/contracts/Fgrant.cdc"
-  },
-  "networks": {
-    "emulator": "127.0.0.1:8888",
-    "mainnet": "access.mainnet.nodes.onflow.org:9000",
-    "sandboxnet": "access.sandboxnet.nodes.onflow.org:9000",
-    "testnet": "access.devnet.nodes.onflow.org:9000"
-  },
-  "accounts": {
-    "ai": {
-      "address": "b4170ece72cc8978",
-      "key": {
-        "type": "file",
-        "location": "ai.pkey"
-      }
-    },
-    "ai3": {
-      "address": "300d7cbec8d10f4d",
-      "key": {
-        "type": "file",
-        "location": "ai3.pkey"
-      }
-    },
-    "flow": {
-      "address": "b9b9e5ad5de42ef6",
-      "key": {
-        "type": "file",
-        "location": "flow.pkey"
-      }
-    },
-    "grant": {
-      "address": "4bccd1931d30027a",
-      "key": {
-        "type": "file",
-        "location": "grant.pkey"
-      }
-    },
-    "grants": {
-      "address": "57238b9325c2de47",
-      "key": {
-        "type": "file",
-        "location": "grants.pkey"
-      }
-    },
-    "my-emulator-account": {
-      "address": "f8d6e0586b0a20c7",
-      "key": "3ac4a555593845b55f4c9da899a0a1b369224de78dd649843c7db0308e8d2e28"
-    }
-  },
-  "deployments": {
-    "emulator": {
-      "my-emulator-account": ["GrantHub", "FlowToken", "FungibleToken"]
-    },
-    "testnet": {
-      "grants": ["GrantHub"]
-    }
-  }
+	"contracts": {
+		"Fgrant": {
+			"source": "./flow/cadence/contracts/Fgrant.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "87a223d6f50ca9ed"
+			}
+		},
+		"FlowToken": {
+			"source": "./flow/cadence/contracts/FlowToken.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "87a223d6f50ca9ed"
+			}
+		},
+		"FungibleToken": {
+			"source": "./flow/cadence/contracts/FungibleToken.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "87a223d6f50ca9ed"
+			}
+		},
+		"GrantHub": "cadence/contracts/Fgrant.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:8888",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"sandboxnet": "access.sandboxnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"ai": {
+			"address": "b4170ece72cc8978",
+			"key": {
+				"type": "file",
+				"location": "ai.pkey"
+			}
+		},
+		"ai3": {
+			"address": "300d7cbec8d10f4d",
+			"key": {
+				"type": "file",
+				"location": "ai3.pkey"
+			}
+		},
+		"flow": {
+			"address": "b9b9e5ad5de42ef6",
+			"key": {
+				"type": "file",
+				"location": "flow.pkey"
+			}
+		},
+		"flow1": {
+			"address": "507dc1ab87c6636f",
+			"key": {
+				"type": "file",
+				"location": "flow1.pkey"
+			}
+		},
+		"grant": {
+			"address": "4bccd1931d30027a",
+			"key": {
+				"type": "file",
+				"location": "grant.pkey"
+			}
+		},
+		"grants": {
+			"address": "57238b9325c2de47",
+			"key": {
+				"type": "file",
+				"location": "grants.pkey"
+			}
+		},
+		"my-emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "3ac4a555593845b55f4c9da899a0a1b369224de78dd649843c7db0308e8d2e28"
+		}
+	},
+	"deployments": {
+		"emulator": {
+			"my-emulator-account": [
+				"GrantHub",
+				"FlowToken",
+				"FungibleToken"
+			]
+		},
+		"testnet": {
+			"flow1": [
+				"GrantHub"
+			],
+			"grants": [
+				"GrantHub"
+			]
+		}
+	}
 }

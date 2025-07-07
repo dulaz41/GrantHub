@@ -81,10 +81,12 @@ const Description = () => {
     // Perform your desired actions with the inputFunds data
     console.log(inputFunds);
     const signMessage = async () => {
-      const wallet = await fcl.authenticate(); 
-      const MSG = Buffer.from(`User: ${wallet.addr} funding proposal with ${JSON.stringify(inputFunds)}`).toString(
-        "hex"
-      );
+      const wallet = await fcl.authenticate();
+      const MSG = Buffer.from(
+        `User: ${wallet.addr} funding proposal with ${JSON.stringify(
+          inputFunds
+        )}`
+      ).toString("hex");
       try {
         const signatures = await fcl.currentUser.signUserMessage(MSG);
         const signature = signatures[0]; // Extract the first signature from the array
@@ -99,7 +101,7 @@ const Description = () => {
     try {
       const transactionId = await fcl.mutate({
         cadence: `
-          import GrantHub from 0xb9b9e5ad5de42ef6
+          import GrantHub from 0x507dc1ab87c6636f
           import FungibleToken from 0x9a0766d93b6608b7
           import FlowToken from 0x7e60df042a9c0868
 
@@ -128,8 +130,8 @@ const Description = () => {
       // log the transaction ID
       console.log("Transaction ID:", transactionId);
       // Wait for the transaction to be executed
-      const transaction = await fcl.tx(transactionId).onceExecuted()
-      console.log(transaction)
+      const transaction = await fcl.tx(transactionId).onceExecuted();
+      console.log(transaction);
       console.log("Proposal created successfully.");
     } catch (error) {
       console.log(error);
@@ -192,23 +194,26 @@ const Description = () => {
 
   useEffect(() => {
     // Extract URL parameters
-    const id = searchParams.get('id');
-    const name = searchParams.get('name');
-    const projectName = searchParams.get('projectName');
-    const fundingGoal = searchParams.get('fundingGoal');
-    const description = searchParams.get('description');
-    const proposer = searchParams.get('proposer');
-    const status = searchParams.get('status');
+    const id = searchParams.get("id");
+    const name = searchParams.get("name");
+    const projectName = searchParams.get("projectName");
+    const fundingGoal = searchParams.get("fundingGoal");
+    const description = searchParams.get("description");
+    const proposer = searchParams.get("proposer");
+    const status = searchParams.get("status");
 
     if (id) {
       setProjectData({
         id,
-        name: name || 'Unknown',
-        projectName: projectName || 'Unknown Project',
-        fundingGoal: fundingGoal || '0',
-        description: description && description !== 'undefined' ? description : 'No description available',
-        proposer: proposer || 'Unknown',
-        status: status || 'Unknown'
+        name: name || "Unknown",
+        projectName: projectName || "Unknown Project",
+        fundingGoal: fundingGoal || "0",
+        description:
+          description && description !== "undefined"
+            ? description
+            : "No description available",
+        proposer: proposer || "Unknown",
+        status: status || "Unknown",
       });
     }
     setIsLoading(false);
@@ -375,25 +380,25 @@ const Description = () => {
                   />
                   <div className="flex gap-y-[10px] flex-col">
                     <h3 className="text-[#00EF8B] lg:text-[40px] text-[18px] text-center font-semibold">
-                      {projectData?.name || 'Loading...'}
+                      {projectData?.name || "Loading..."}
                     </h3>
                   </div>
                 </div>
                 <p className=" text-black lg:text-[24px] text-[12px] text-center font-semibold ">
-                  $FLOW {projectData?.fundingGoal || '0'}
+                  $FLOW {projectData?.fundingGoal || "0"}
                 </p>
               </div>
               <div className="flex justify-between lg:pt-[48px] pt-[16px] gap-y-4">
                 <p className=" text-[#626262] lg:text-[30px] text-[16px] text-center font-semibold ">
-                  {projectData?.projectName || 'Loading...'}
+                  {projectData?.projectName || "Loading..."}
                 </p>
                 <p className=" text-[#626262] lg:text-[30px] text-[14px] text-center font-semibold ">
-                  {projectData?.status || 'Loading...'}
+                  {projectData?.status || "Loading..."}
                 </p>
               </div>
               <div className="space-y-[28px] flex flex-col my-[64px] lg:h-[116px] lg:w-[100%]">
                 <p className="text-[#303030] lg:text-2xl text-sm">
-                  {projectData?.description || 'Loading project description...'}
+                  {projectData?.description || "Loading project description..."}
                 </p>
               </div>
               <div className="lg:pl-[46px] flex lg:flex-row gap-y-6 items-center flex-col mb-[68px] lg:pt-[128px] ">

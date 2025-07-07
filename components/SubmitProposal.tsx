@@ -69,7 +69,7 @@ const SubmitProposal: React.FC = () => {
   };
 
   const signMessage = async (): Promise<string | undefined> => {
-    const wallet = await fcl.authenticate(); 
+    const wallet = await fcl.authenticate();
     const MSG = Buffer.from(`Creating Proposal for ${wallet.addr}`).toString(
       "hex"
     );
@@ -95,7 +95,7 @@ const SubmitProposal: React.FC = () => {
     try {
       const transactionId = await fcl.mutate({
         cadence: `
-        import GrantHub from 0xb9b9e5ad5de42ef6
+        import GrantHub from 0x507dc1ab87c6636f
 
         transaction(
             name: String,
@@ -133,8 +133,8 @@ const SubmitProposal: React.FC = () => {
       // log the transaction ID
       console.log("Transaction ID:", transactionId);
       // Wait for the transaction to be executed
-      const transaction = await fcl.tx(transactionId).onceExecuted()
-      console.log(transaction)
+      const transaction = await fcl.tx(transactionId).onceExecuted();
+      console.log(transaction);
       console.log("Proposal created successfully.");
     } catch (error) {
       console.log(error);
@@ -184,13 +184,13 @@ const SubmitProposal: React.FC = () => {
           >
             <div className="flex lg:min-w-0 lg:flex-1">
               <a href="/" className="-m-1.5 p-1">
-            <span className="sr-only">Granthub</span>
-            <Image
-              className="flex-shrink-0 lg:w-[190px] lg:h-[72px] md:w-[182px] w-[120px] h-[55px] "
-              src={logo}
-              alt="logo"
-            />
-          </a>
+                <span className="sr-only">Granthub</span>
+                <Image
+                  className="flex-shrink-0 lg:w-[190px] lg:h-[72px] md:w-[182px] w-[120px] h-[55px] "
+                  src={logo}
+                  alt="logo"
+                />
+              </a>
             </div>
           </nav>
         </header>

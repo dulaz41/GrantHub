@@ -1,0 +1,14 @@
+{
+  "name": "GrantHub",
+  "tagline": "Decentralized milestone-based grant funding on Flow",
+  "description": "GrantHub is a decentralized grant funding platform built on the Flow blockchain using Cadence. It enables trustless, milestone-driven funding for community projects through secure proposals, pooled funding, and community-managed vaults. Technologies used include Cadence smart contracts, Flow Token vaults, and Flow's capability-based access system.",
+  "team": [
+    {
+      "name": "Abdulazeez Salihu",
+      "email": "abdulazeezsalihu41@example.com"
+    }
+  ],
+  "demo_url": "https://your-demo-page.example.com",
+  "video_url": "https://youtube.com/watch?v=your-demo-video",
+  "technologies": ["Cadence", "Flow Blockchain", "Flow CLI", "React", "FCL"]
+}
