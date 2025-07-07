@@ -1,7 +1,3 @@
-Absolutely — here is a **professional and in-depth README** for the entire GrantHub **project** (not just the smart contract), covering the full end-to-end architecture, its frontend, CLI, testing, and developer guidelines:
-
----
-
 # GrantHub 🌱
 
 GrantHub is a **full-stack decentralized grant funding platform** built on the Flow blockchain. It empowers communities to fund projects transparently and trustlessly through milestone-based proposals, pooled resources, and community-driven governance.
