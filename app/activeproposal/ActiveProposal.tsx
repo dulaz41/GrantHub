@@ -41,6 +41,8 @@ const Project: React.FC = () => {
         cadence: GET_ALL_PROPS,
       });
 
+      console.log(response);
+
       const formattedProjects: Project[] = response.map((project: Project) => ({
         ...project,
         fundingGoal: Math.floor(project.fundingGoal),

@@ -69,14 +69,14 @@ const SubmitProposal: React.FC = () => {
   };
 
   const signMessage = async (): Promise<string | undefined> => {
-    const wallet = await fcl.logIn();
+    const wallet = await fcl.authenticate(); 
     const MSG = Buffer.from(`Creating Proposal for ${wallet.addr}`).toString(
       "hex"
     );
     try {
       const signatures = await fcl.currentUser.signUserMessage(MSG);
       const signature = signatures[0]; // Extract the first signature from the array
-      return signature;
+      return signature.signature; // Access the signature property
     } catch (error) {
       console.log(error);
       return undefined;
@@ -85,63 +85,57 @@ const SubmitProposal: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // Configure AWS SDK credentials
-    AWS.config.update({
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    });
-
-    // Upload the image to S3
-    if (selectedFile) {
-      const s3 = new AWS.S3();
-      const key = `photos/${selectedFile.name}`; // Set the desired key with a prefix
-      const params = {
-        Bucket: "flowgrantnew",
-        Key: key,
-        Body: selectedFile,
-        // ACL: 'public-read'
-      };
-
-      try {
-        await s3.upload(params).promise();
-        console.log("Image uploaded successfully.");
-      } catch (error) {
-        console.error("Error uploading image to S3:", error);
-      }
-    }
+    // log form data
+    console.log("Form Data:", formData);
 
     // Sign the message
     const signature = await signMessage();
 
-    // Prepare the proposal data
-    const proposalData = {
-      proposalId: 0,
-      walletAddress: "string",
-      name: formData.name,
-      email: formData.email,
-      file: "string",
-      description: formData.description,
-      message: formData.message,
-      website: formData.website,
-      socialmedia: formData.socialmedia,
-      proposalAmount: Number(formData.amount),
-      status: "string",
-      location: formData.location,
-    };
-
-    // Make the API call
+    // Call the Flow mutate function to create the proposal
     try {
-      const response = await fetch("http://16.170.224.207/proposal", {
-        method: "POST",
-        body: JSON.stringify(proposalData),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Signature: signature || "", // Add the signature to the request headers
-        },
+      const transactionId = await fcl.mutate({
+        cadence: `
+        import GrantHub from 0xb9b9e5ad5de42ef6
+
+        transaction(
+            name: String,
+            projectName: String,
+            coverDescription: String,
+            projectDescription: String,
+            fundingGoal: UFix64
+        ) {
+            prepare(acct: auth(Storage, Capabilities) &Account) {
+                let proposer = acct.address
+                let proposalId = GrantHub.createProposal(
+                    proposer: proposer,
+                    name: name,
+                    projectName: projectName,
+                    coverDescription: coverDescription,
+                    projectDescription: projectDescription,
+                    fundingGoal: fundingGoal
+                )
+                log("Created proposal with ID: ".concat(proposalId.toString()))
+            }
+        }
+    `,
+        args: (arg, t) => [
+          arg(formData.name, t.String),
+          arg(formData.name, t.String), // This should probably be a different field
+          arg(formData.description, t.String),
+          arg(formData.message, t.String),
+          arg(formData.amount, t.UFix64), // Changed: Pass string directly to t.UFix64
+        ],
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser],
+        limit: 50,
       });
-      const data = await response.json();
-      console.log(data);
+      // log the transaction ID
+      console.log("Transaction ID:", transactionId);
+      // Wait for the transaction to be executed
+      const transaction = await fcl.tx(transactionId).onceExecuted()
+      console.log(transaction)
+      console.log("Proposal created successfully.");
     } catch (error) {
       console.log(error);
     }
