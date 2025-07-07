@@ -2,7 +2,11 @@
 import { Footer, Hero, Navbar } from '@/components'
 import React, { useState, useEffect, JSX } from 'react'
 import * as fcl from "@onflow/fcl";
-import "../flow/config";
+
+// Dynamic import for FCL config to avoid SSR issues
+if (typeof window !== 'undefined') {
+  import("../flow/config");
+}
 
 
 interface AccountData {
@@ -15,19 +19,30 @@ interface AccountData {
 export default function Home(): JSX.Element {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [account, setAccount] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  // Handle mounting to prevent hydration mismatches
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Check if user is already authenticated on mount
   useEffect(() => {
-    fcl.currentUser.subscribe((user: any) => {
-      if (user?.addr) {
-        setIsConnected(true);
-        setAccount(user.addr);
-      } else {
-        setIsConnected(false);
-        setAccount(null);
-      }
-    });
-  }, []);
+    if (!isMounted) return;
+    
+    // Only run FCL subscription on client side
+    if (typeof window !== 'undefined') {
+      fcl.currentUser.subscribe((user: any) => {
+        if (user?.addr) {
+          setIsConnected(true);
+          setAccount(user.addr);
+        } else {
+          setIsConnected(false);
+          setAccount(null);
+        }
+      });
+    }
+  }, [isMounted]);
 
   const handleClick = async (): Promise<void> => {
     try {
@@ -52,13 +67,19 @@ export default function Home(): JSX.Element {
   };
 
   const handleDisconnect = async (): Promise<void> => {
+    // Only run confirm() on the client side
     if (typeof window !== 'undefined') {
-      const confirmDisconnect = window.confirm('Are you sure you want to disconnect?');
+      const confirmDisconnect = confirm('Are you sure you want to disconnect?');
       if (confirmDisconnect) {
         await fcl.unauthenticate();
       }
     }
   };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted) {
+    return <div className="overflow-hidden relative min-h-screen bg-white"></div>;
+  }
 
   return (
     <main className="overflow-hidden relative">

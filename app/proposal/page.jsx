@@ -1,16 +1,21 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import user from "../../public/assets/Ellipse2.png";
 import upload from "../../public/assets/upload.png";
 import Link from "next/link";
 import { FiCopy } from "react-icons/fi";
 import logo from "../../public/images/logo.png";
+import * as fcl from "@onflow/fcl";
 
 const Description = () => {
+  const searchParams = useSearchParams();
   const [selectedItems, setSelectedItems] = useState([null, null, null, null]);
   const [selectedFunds, setSelectedFunds] = useState([null, null, null]);
   const [isScrollingUp, setIsScrollingUp] = useState(false);
+  const [projectData, setProjectData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const initialValues = [
     { type: "email", label: "Email", example: "example@example.com" },
@@ -72,11 +77,86 @@ const Description = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Perform your desired actions with the inputFunds data
     console.log(inputFunds);
+    const signMessage = async () => {
+      const wallet = await fcl.authenticate(); 
+      const MSG = Buffer.from(`User: ${wallet.addr} funding proposal with ${JSON.stringify(inputFunds)}`).toString(
+        "hex"
+      );
+      try {
+        const signatures = await fcl.currentUser.signUserMessage(MSG);
+        const signature = signatures[0]; // Extract the first signature from the array
+        return signature.signature; // Access the signature property
+      } catch (error) {
+        console.log(error);
+        return undefined;
+      }
+    };
+
+    // Call the Flow mutate function to fund the proposal
+    try {
+      const transactionId = await fcl.mutate({
+        cadence: `
+          import GrantHub from 0xb9b9e5ad5de42ef6
+          import FungibleToken from 0x9a0766d93b6608b7
+          import FlowToken from 0x7e60df042a9c0868
+
+          transaction(proposalId: UInt64, amount: UFix64) {
+              prepare(acct: auth(Storage) &Account) {
+                  let vaultRef = acct.storage.borrow<auth(FungibleToken.Withdraw) &FlowToken.Vault>(from: /storage/flowTokenVault)
+                      ?? panic("No FlowToken vault found in storage")
+                  let payment <- vaultRef.withdraw(amount: amount)
+                  GrantHub.fundProposal(proposalId: proposalId, from: <- payment, funder: acct.address)
+              }
+
+              execute {
+                  log("Transaction executed successfully")
+              }
+          }
+        `,
+        args: (arg, t) => [
+          arg(projectData.id, t.UInt64),
+          arg(inputFunds[0].value, t.UFix64), // Assuming the first input field is the funding amount
+        ],
+        proposer: fcl.currentUser,
+        payer: fcl.currentUser,
+        authorizations: [fcl.currentUser],
+        limit: 50,
+      });
+      // log the transaction ID
+      console.log("Transaction ID:", transactionId);
+      // Wait for the transaction to be executed
+      const transaction = await fcl.tx(transactionId).onceExecuted()
+      console.log(transaction)
+      console.log("Proposal created successfully.");
+    } catch (error) {
+      console.log(error);
+    }
     // Reset the form if needed
-    setInputFunds(initialFunds);
+    if (projectData) {
+      setInputFunds([
+        {
+          type: "number",
+          label: "Funding amount",
+          value: "",
+          placeholder: `$FLOW ${projectData.fundingGoal}`,
+        },
+        {
+          type: "text",
+          label: "Funder's name",
+          value: "",
+          placeholder: "Abdulsalam Ibrahim",
+        },
+        {
+          type: "email",
+          label: "Contact",
+          value: "",
+          placeholder: "example@example.com",
+        },
+      ]);
+    }
   };
 
   const handleFileChange = (index, files) => {
@@ -111,6 +191,28 @@ const Description = () => {
   };
 
   useEffect(() => {
+    // Extract URL parameters
+    const id = searchParams.get('id');
+    const name = searchParams.get('name');
+    const projectName = searchParams.get('projectName');
+    const fundingGoal = searchParams.get('fundingGoal');
+    const description = searchParams.get('description');
+    const proposer = searchParams.get('proposer');
+    const status = searchParams.get('status');
+
+    if (id) {
+      setProjectData({
+        id,
+        name: name || 'Unknown',
+        projectName: projectName || 'Unknown Project',
+        fundingGoal: fundingGoal || '0',
+        description: description && description !== 'undefined' ? description : 'No description available',
+        proposer: proposer || 'Unknown',
+        status: status || 'Unknown'
+      });
+    }
+    setIsLoading(false);
+
     let prevScrollPos = window.scrollY;
 
     const handleScroll = () => {
@@ -122,7 +224,57 @@ const Description = () => {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [searchParams]);
+
+  // Update input funds when project data changes
+  useEffect(() => {
+    if (projectData) {
+      setInputFunds([
+        {
+          type: "number",
+          label: "Funding amount",
+          value: "",
+          placeholder: `$FLOW ${projectData.fundingGoal}`,
+        },
+        {
+          type: "text",
+          label: "Funder's name",
+          value: "",
+          placeholder: "Abdulsalam Ibrahim",
+        },
+        {
+          type: "email",
+          label: "Contact",
+          value: "",
+          placeholder: "example@example.com",
+        },
+      ]);
+    }
+  }, [projectData]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00EF8B]"></div>
+          <p className="mt-4 text-xl">Loading project details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!projectData) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-xl text-red-500">No project data found</p>
+          <Link href="/" className="text-[#00EF8B] underline mt-4 block">
+            Go back to home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -223,40 +375,25 @@ const Description = () => {
                   />
                   <div className="flex gap-y-[10px] flex-col">
                     <h3 className="text-[#00EF8B] lg:text-[40px] text-[18px] text-center font-semibold">
-                      AbdulAzeez Tasleem
+                      {projectData?.name || 'Loading...'}
                     </h3>
                   </div>
                 </div>
                 <p className=" text-black lg:text-[24px] text-[12px] text-center font-semibold ">
-                  $FLOW 500,000
+                  $FLOW {projectData?.fundingGoal || '0'}
                 </p>
               </div>
               <div className="flex justify-between lg:pt-[48px] pt-[16px] gap-y-4">
                 <p className=" text-[#626262] lg:text-[30px] text-[16px] text-center font-semibold ">
-                  Blockchain education cohort
+                  {projectData?.projectName || 'Loading...'}
                 </p>
                 <p className=" text-[#626262] lg:text-[30px] text-[14px] text-center font-semibold ">
-                  In review
+                  {projectData?.status || 'Loading...'}
                 </p>
               </div>
               <div className="space-y-[28px] flex flex-col my-[64px] lg:h-[116px] lg:w-[100%]">
                 <p className="text-[#303030] lg:text-2xl text-sm">
-                  Don&apos;t wait any longer. Take the first step towards
-                  revolutionizing the blockchain industry by getting started
-                  with Flow Grant today. Together, let&apos;s unleash the
-                  potential of tomorrow and make your vision a reality.
-                </p>
-                <p className="text-[#303030] lg:text-2xl text-sm">
-                  Don&apos;t wait any longer. Take the first step towards
-                  revolutionizing the blockchain industry by getting started
-                  with Flow Grant today. Together, let&apos;s unleash the
-                  potential of tomorrow and make your vision a reality.
-                </p>
-                <p className="text-[#303030] lg:text-2xl text-sm">
-                  Don&apos;t wait any longer. Take the first step towards
-                  revolutionizing the blockchain industry by getting started
-                  with Flow Grant today. Together, let&apos;s unleash the
-                  potential of tomorrow and make your vision a reality.
+                  {projectData?.description || 'Loading project description...'}
                 </p>
               </div>
               <div className="lg:pl-[46px] flex lg:flex-row gap-y-6 items-center flex-col mb-[68px] lg:pt-[128px] ">

@@ -10,7 +10,11 @@ import Image from 'next/image';
 import greet from '../public/images/greet.png'
 import Footer from './Footer';
 import * as fcl from "@onflow/fcl";
-import "../flow/config";
+
+// Dynamic import for FCL config to avoid SSR issues
+if (typeof window !== 'undefined') {
+  import("../flow/config");
+}
 
 
 const features = [

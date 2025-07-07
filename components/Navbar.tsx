@@ -18,8 +18,15 @@ const Navbar: React.FC<NavbarProps> = ({
   onConnect,
 }) => {
   const [isScrollingUp, setIsScrollingUp] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     let prevScrollPos = window.scrollY;
 
     const handleScroll = () => {
@@ -31,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isMounted]);
 
   return (
     <header className="fixed inset-x-0 lg:mb-4 mb-3 top-0 z-50">
