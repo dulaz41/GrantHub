@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import user from "../../public/assets/Ellipse2.png";
 import upload from "../../public/assets/upload.png";
@@ -10,7 +10,7 @@ import logo from "../../public/images/logo.png";
 import * as fcl from "@onflow/fcl";
 import Notification from "../../components/Notification";
 
-const Description = () => {
+const ProposalContent = () => {
   const searchParams = useSearchParams();
   const [selectedItems, setSelectedItems] = useState([null, null, null, null]);
   const [selectedFunds, setSelectedFunds] = useState([null, null, null]);
@@ -554,6 +554,21 @@ const Description = () => {
         </div>
       </div>
     </>
+  );
+};
+
+const Description = () => {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00EF8B]"></div>
+          <p className="mt-4 text-xl">Loading proposal...</p>
+        </div>
+      </div>
+    }>
+      <ProposalContent />
+    </Suspense>
   );
 };
 
